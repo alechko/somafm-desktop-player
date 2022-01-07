@@ -8,9 +8,9 @@ Built based on [Electron + TypeScript + React](https://github.com/diego3g/electr
 
 ## Todo
 
-[ ] Keyboard shortcuts
-[ ] Github actions
-[ ] Current song information
+- [ ] Keyboard shortcuts
+- [ ] Github actions
+- [ ] Current song information
 
 ## Local Installation
 
