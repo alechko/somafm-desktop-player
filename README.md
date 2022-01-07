@@ -1,8 +1,18 @@
-## Electron + TypeScript + React
+# SomaFM Desktop Player
 
-Boilerplate for a project using Electron, React and Typescript.
+SomaFM desktop player is a small project to practice Electron with React.
 
-## Installation
+![SomaFM Desktop Player](/assets/screenshot.png 'SomaFM Desktop Player')
+
+Built based on [Electron + TypeScript + React](https://github.com/diego3g/electron-typescript-react) template with Chakra UI.
+
+## Todo
+
+[ ] Keyboard shortcuts
+[ ] Github actions
+[ ] Current song information
+
+## Local Installation
 
 Use a package manager of your choice (npm, yarn, etc.) in order to install all dependencies
 
@@ -25,10 +35,6 @@ To generate the project package based on the OS you're running on, just run:
 ```bash
 yarn package
 ```
-
-## Contributing
-
-Pull requests are always welcome 😃.
 
 ## License
 
