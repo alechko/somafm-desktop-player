@@ -5,9 +5,10 @@ import { getStationUrl } from '../../lib/somafm'
 
 export const Player = () => {
   const {
-    state: { volume, station },
+    state: { playing, volume, station },
   } = useContext(MainContext)
-  if (!station) {
+
+  if (!playing || !station) {
     return <></>
   }
   const stationUrl = getStationUrl(station.id)
@@ -18,7 +19,7 @@ export const Player = () => {
       // url="https://ice2.somafm.com/dronezone-256-mp3"
       url={stationUrl}
       volume={volume}
-      playing
+      playing={playing}
       config={{
         file: {
           forceAudio: true,

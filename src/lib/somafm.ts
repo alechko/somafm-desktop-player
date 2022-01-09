@@ -13,3 +13,11 @@ export const getStationUrl = (id: string) => {
   const url = `${iceUrl}/${id}`
   return url
 }
+
+export const getSongsList = async (id: string) => {
+  const url = `${baseUrl}/songs/${id}.json`
+  return fetch(url)
+    .then(r => r.json())
+    .then(r => r)
+    .catch(e => console.error(e))
+}

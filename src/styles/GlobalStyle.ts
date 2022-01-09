@@ -7,6 +7,9 @@ export const GlobalStyle = createGlobalStyle`
     box-sizing: border-box;
   }
 
+  html {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont;
+  }
   html, body, #root {
     height: 100%
   }

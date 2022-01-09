@@ -2,6 +2,7 @@ import { Box, BoxProps, Flex, HStack, Image, Link, Text, Tooltip, VStack } from 
 import { useContext, useEffect } from 'react'
 import { MainContext } from '../../lib/context'
 import { getAllStations } from '../../lib/somafm'
+import { Filter } from '../player/filter'
 
 export const Side = (props: BoxProps) => {
   const {
@@ -33,7 +34,8 @@ export const Side = (props: BoxProps) => {
       className="no-drag"
     >
       <VStack spacing={1} alignItems="start">
-        {stations.map(item => (
+        <Filter mb={2} />
+        {stations.map((item, index) => (
           <Box
             as={Link}
             key={item.id}
@@ -49,8 +51,8 @@ export const Side = (props: BoxProps) => {
               textDecoration: 'none',
             }}
             w="full"
-            rounded="sm"
             p={2}
+            rounded="sm"
             className="no-select"
           >
             <HStack spacing={4}>

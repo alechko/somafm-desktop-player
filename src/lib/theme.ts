@@ -5,11 +5,6 @@ const config = {
   useSystemColorMode: true,
 }
 
-const fonts = {
-  heading: 'Assistant',
-  body: 'Assistant',
-}
-
-const theme = extendTheme({ config, fonts })
+const theme = extendTheme({ config })
 
 export default theme

@@ -8,9 +8,13 @@ Built based on [Electron + TypeScript + React](https://github.com/diego3g/electr
 
 ## Todo
 
-- [ ] Keyboard shortcuts
+- [ ] Add settings
+- [ ] Add some animations
 - [ ] Github actions
-- [ ] Current song information
+
+### Optional
+
+- [ ] Migrate from Chakra UI to custom components with [Stitches](https://stitches.dev/)
 
 ## Local Installation
 

@@ -1,7 +1,7 @@
 import { Box, Center, HStack, VStack } from '@chakra-ui/react'
 import { useContext } from 'react'
 import { MainContext } from '../../lib/context'
-import { Card } from '../player/card'
+import { StationCard } from '../player/station-card'
 import { Controls } from '../player/controls'
 import { Side } from './side'
 
@@ -24,7 +24,7 @@ export const Home = () => {
           <Side />
           <Center flexGrow={1} h="full">
             <VStack h="full" w="full" spacing={4}>
-              <Card flexGrow={1} className="no-drag" />
+              <StationCard flexGrow={1} className="no-drag" />
               <Controls w="full" className="no-drag" />
             </VStack>
           </Center>

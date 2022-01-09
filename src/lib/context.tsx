@@ -1,4 +1,6 @@
+import _ from 'lodash'
 import { createContext, FC, useReducer, Dispatch } from 'react'
+import { getState, saveState } from './storage'
 
 type PlaylistType = {
   url: string
@@ -27,7 +29,10 @@ export type StationType = {
 type MainStateType = {
   stations: StationType[]
   station: StationType | null
+  playing: boolean
   volume: number
+  sortBy: string
+  sortOrder: 'asc' | 'desc'
 }
 
 // type MainContextActions = {
@@ -37,37 +42,71 @@ type MainStateType = {
 //   setVolume: (volume: number) => void
 // }
 
+const sortStations = (
+  stations: StationType[],
+  sortBy: string,
+  sortOrder: 'asc' | 'desc'
+): StationType[] => {
+  return _.orderBy(
+    stations,
+    (o: StationType) => {
+      if (sortBy === 'listeners') {
+        return Number(o[sortBy])
+      }
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      return o[sortBy]
+    },
+    sortOrder
+  )
+}
+
 const mainReducer = (state: MainStateType, action: any) => {
   switch (action.type) {
     case 'play':
-      localStorage.setItem('station', action.payload.data.id)
+      saveState({ station: action.payload.data.id })
       return {
         ...state,
         station: action.payload.data,
+        playing: true,
       }
     case 'stop':
-      localStorage.removeItem('station')
       return {
         ...state,
-        station: null,
+        playing: false,
       }
     case 'setStations':
       // eslint-disable-next-line no-case-declarations
-      let storedData: string | null = null
-      if (state.station === null) {
-        storedData = JSON.parse(JSON.stringify(localStorage.getItem('station')))
-      }
+      const localState = getState()
       return {
         ...state,
-        station: storedData
-          ? action.payload.data.find((v: StationType) => v.id === storedData)
+        station: localState
+          ? action.payload.data.find((v: StationType) => v.id === localState.station)
           : null,
-        stations: action.payload.data,
+        playing: true,
+        volume: localState && localState.volume ? localState.volume : state.volume,
+        stations: sortStations(action.payload.data, state.sortBy, state.sortOrder),
+      }
+    case 'sortStations':
+      return {
+        ...state,
+        stations: sortStations(state.stations, action.payload.sortBy, action.payload.sortOrder),
       }
     case 'setVolume':
+      saveState({ volume: action.payload })
       return {
         ...state,
         volume: action.payload,
+      }
+    case 'setSortBy':
+      return {
+        ...state,
+        sortBy: action.payload,
+      }
+    case 'setSortOrder':
+      return {
+        ...state,
+        sortOrder: action.payload,
       }
     default:
       return state
@@ -78,10 +117,9 @@ const initState: MainStateType = {
   stations: [],
   station: null,
   volume: 0.5,
-  // play: () => {},
-  // stop: () => {},
-  // setStations: () => {},
-  // setVolume: () => {},
+  playing: false,
+  sortBy: 'title',
+  sortOrder: 'asc',
 }
 export const MainContext = createContext<{ state: MainStateType; dispatch: Dispatch<any> }>({
   state: initState,
@@ -89,15 +127,6 @@ export const MainContext = createContext<{ state: MainStateType; dispatch: Dispa
 })
 
 export const MainProvider: FC = ({ children }) => {
-  // const [state, setState] = useState({
-  //   stations: [],
-  //   station: null,
-  //   volume: 0.5,
-  //   play: (data: any) => setState({ ...state, station: data }),
-  //   stop: () => setState({ ...state, station: null }),
-  //   setStations: (data: any) => setState({ ...state, stations: data }),
-  //   setVolume: (volume: number) => console.log(state),
-  // })
   const [state, dispatch] = useReducer(mainReducer, initState)
   return <MainContext.Provider value={{ state, dispatch }}>{children}</MainContext.Provider>
 }

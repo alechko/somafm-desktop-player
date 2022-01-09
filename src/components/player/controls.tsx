@@ -10,16 +10,41 @@ import {
   SliderThumb,
   SliderTrack,
 } from '@chakra-ui/react'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { MainContext } from '../../lib/context'
 import { Play, Pause, Next, Prev } from '../icons'
 import { Player } from './player'
 
 export const Controls = (props: BoxProps) => {
   const {
-    state: { station, stations, volume },
+    state: { playing, station, stations, volume },
     dispatch,
   } = useContext(MainContext)
+
+  const onKeyPress = (e: KeyboardEvent) => {
+    switch (e.code) {
+      case 'Space':
+        e.preventDefault()
+        if (playing) {
+          dispatch({
+            type: 'stop',
+          })
+        } else {
+          dispatch({
+            type: 'play',
+            payload: { data: station },
+          })
+        }
+        break
+    }
+  }
+  useEffect(() => {
+    window.addEventListener('keydown', onKeyPress)
+    return () => {
+      window.removeEventListener('keydown', onKeyPress)
+    }
+  }, [playing])
+
   return (
     <Box {...props}>
       <Player />
@@ -36,7 +61,7 @@ export const Controls = (props: BoxProps) => {
           <IconButton
             aria-label="Prev"
             icon={<Icon as={Prev} />}
-            disabled={!station}
+            disabled={!playing}
             onClick={() => {
               const index = stations.findIndex(v => v.id === station!.id)
               dispatch({
@@ -45,7 +70,7 @@ export const Controls = (props: BoxProps) => {
               })
             }}
           />
-          {station ? (
+          {playing ? (
             <IconButton
               aria-label="Pause"
               icon={<Icon as={Pause} />}
@@ -73,7 +98,7 @@ export const Controls = (props: BoxProps) => {
           <IconButton
             aria-label="Next"
             icon={<Icon as={Next} />}
-            disabled={!station}
+            disabled={!playing}
             onClick={() => {
               const index = stations.findIndex(v => v.id === station!.id)
               dispatch({
