@@ -38,10 +38,12 @@
     "@babel/preset-typescript": "7.14.5",
     "@electron-forge/cli": "6.0.0-beta.57",
     "@electron-forge/maker-deb": "6.0.0-beta.57",
+    "@electron-forge/maker-dmg": "^6.0.0-beta.61",
     "@electron-forge/maker-rpm": "6.0.0-beta.57",
     "@electron-forge/maker-squirrel": "6.0.0-beta.57",
     "@electron-forge/maker-zip": "6.0.0-beta.57",
     "@electron-forge/plugin-webpack": "6.0.0-beta.57",
+    "@electron-forge/publisher-github": "^6.0.0-beta.61",
     "@marshallofsound/webpack-asset-relocator-loader": "0.5.0",
     "@testing-library/jest-dom": "5.14.1",
     "@testing-library/react": "11.2.7",
@@ -121,12 +123,30 @@
           ]
         },
         {
+          "name": "@electron-forge/maker-dmg",
+          "config": {},
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
           "name": "@electron-forge/maker-deb",
           "config": {}
         },
         {
           "name": "@electron-forge/maker-rpm",
           "config": {}
+        }
+      ],
+      "publishers": [
+        {
+          "name": "@electron-forge/publisher-github",
+          "config": {
+            "repository": {
+              "owner": "alechko",
+              "name": "somafm-desktop-player"
+            }
+          }
         }
       ]
     }
