@@ -28,6 +28,8 @@ jobs:
           node-version: 16
       - name: install dependencies
         run: yarn install
+      - name: test
+        run: yarn test
       - name: release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
