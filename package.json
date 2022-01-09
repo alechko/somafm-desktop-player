@@ -145,7 +145,8 @@
             "repository": {
               "owner": "alechko",
               "name": "somafm-desktop-player"
-            }
+            },
+            "draft": false
           }
         }
       ]
