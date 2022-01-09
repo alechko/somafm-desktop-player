@@ -27,11 +27,11 @@ jobs:
         with:
           node-version: 16
       - name: install dependencies
-        run: npm install
-      - name: publish
+        run: yarn install
+      - name: release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run publish
+        run: yarn release
 
   # publish_on_win:
   #   runs-on: windows-latest
