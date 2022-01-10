@@ -6,7 +6,8 @@
     "email": "mail@alechko.net"
   },
   "version": "0.0.6",
-  "description": "Desktop player for SomaFM radio",
+  "description": "SomaFM desktop player for MacOS",
+  "repository": "alechko/somafm-desktop-player",
   "main": "./.webpack/main",
   "scripts": {
     "start": "electron-forge start",
