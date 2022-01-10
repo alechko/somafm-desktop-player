@@ -1,10 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import path from 'path'
 
-require('update-electron-app')({
-  notifyUser: true,
-})
-
 let mainWindow: BrowserWindow | null
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string
