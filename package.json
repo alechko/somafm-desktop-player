@@ -7,7 +7,7 @@
   },
   "version": "0.0.5",
   "description": "Desktop player for SomaFM radio",
-  "main": "./.webpack/main/index.js",
+  "main": "./.webpack/main",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
