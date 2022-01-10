@@ -7,19 +7,19 @@ import { Side } from './side'
 
 export const Home = () => {
   const {
-    state: { station },
+    state: { playing, station },
   } = useContext(MainContext)
   return (
     <Box
       h="full"
       w="full"
-      backgroundImage={station ? station.xlimage : ''}
+      backgroundImage={playing && station ? station.xlimage : ''}
       backgroundRepeat="no-repeat"
       backgroundSize="cover"
       bgPos="center"
       className="drag"
     >
-      <Box h="full" w="full" p={4} className={station ? 'player-overlay' : ''} pt={8}>
+      <Box h="full" w="full" p={4} className={playing && station ? 'player-overlay' : ''} pt={8}>
         <HStack h="full" spacing={4}>
           <Side />
           <Center flexGrow={1} h="full">
