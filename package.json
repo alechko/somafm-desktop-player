@@ -5,7 +5,7 @@
     "name": "alechko",
     "email": "mail@alechko.net"
   },
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Desktop player for SomaFM radio",
   "main": "./.webpack/main",
   "scripts": {
