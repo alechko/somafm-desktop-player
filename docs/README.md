@@ -5,7 +5,7 @@ SomaFM desktop player is a small project to practice Electron with React.
 [![](https://img.shields.io/github/downloads/alechko/somafm-desktop-player/latest/total?sort=semver)](https://github.com/alechko/somafm-desktop-player/releases/latest)
 [![](https://img.shields.io/github/workflow/status/alechko/somafm-desktop-player/Build/main)](https://github.com/alechko/somafm-desktop-player/releases/latest)
 
-![SomaFM Desktop Player](/assets/screenshot.png 'SomaFM Desktop Player')
+![SomaFM Desktop Player](../assets/screenshot.png 'SomaFM Desktop Player')
 
 Built based on [Electron + TypeScript + React](https://github.com/diego3g/electron-typescript-react) template with Chakra UI.
 
