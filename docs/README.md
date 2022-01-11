@@ -1,6 +1,7 @@
 # SomaFM Desktop Player
 
 [![](https://img.shields.io/github/workflow/status/alechko/somafm-desktop-player/Build/main)](https://github.com/alechko/somafm-desktop-player/releases/latest)
+[![](https://img.shields.io/github/package-json/v/alechko/somafm-desktop-player)](https://github.com/alechko/somafm-desktop-player)
 
 ## About
 
