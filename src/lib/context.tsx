@@ -33,6 +33,8 @@ type MainStateType = {
   volume: number
   sortBy: string
   sortOrder: 'asc' | 'desc'
+  bgImage: boolean
+  bgParty: boolean
 }
 
 // type MainContextActions = {
@@ -108,18 +110,34 @@ const mainReducer = (state: MainStateType, action: any) => {
         ...state,
         sortOrder: action.payload,
       }
+    case 'setBgImage':
+      saveState({ bgImage: action.payload })
+      return {
+        ...state,
+        bgImage: action.payload,
+      }
+    case 'setBgParty':
+      saveState({ bgParty: action.payload })
+      return {
+        ...state,
+        bgParty: action.payload,
+      }
     default:
       return state
   }
 }
 
+const localState = getState()
+
 const initState: MainStateType = {
   stations: [],
   station: null,
-  volume: 0.5,
+  volume: localState && localState.volume ? localState.volume : 0.5,
   playing: false,
-  sortBy: 'title',
-  sortOrder: 'asc',
+  sortBy: 'listeners',
+  sortOrder: 'desc',
+  bgImage: localState && typeof localState.bgImage !== 'undefined' ? localState.bgImage : true,
+  bgParty: localState && typeof localState.bgParty !== 'undefined' ? localState.bgParty : true,
 }
 export const MainContext = createContext<{ state: MainStateType; dispatch: Dispatch<any> }>({
   state: initState,

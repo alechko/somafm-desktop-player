@@ -9,15 +9,16 @@ import {
   SliderFilledTrack,
   SliderThumb,
   SliderTrack,
+  Spacer,
 } from '@chakra-ui/react'
 import { useContext, useEffect } from 'react'
 import { MainContext } from '../../lib/context'
-import { Play, Pause, Next, Prev } from '../icons'
+import { Play, Pause, Next, Prev, Img, DropInvert } from '../icons'
 import { Player } from './player'
 
 export const Controls = (props: BoxProps) => {
   const {
-    state: { playing, station, stations, volume },
+    state: { playing, station, stations, volume, bgImage, bgParty },
     dispatch,
   } = useContext(MainContext)
 
@@ -58,6 +59,29 @@ export const Controls = (props: BoxProps) => {
         }}
       >
         <HStack spacing={4}>
+          <IconButton
+            aria-label="Toggle background image"
+            icon={<Icon as={Img} />}
+            color={bgImage ? 'whiteAlpha.600' : 'whiteAlpha.200'}
+            onClick={() => {
+              dispatch({
+                type: 'setBgImage',
+                payload: !bgImage,
+              })
+            }}
+          />
+          <IconButton
+            aria-label="Toggle party mode"
+            icon={<Icon as={DropInvert} />}
+            color={bgParty ? 'whiteAlpha.600' : 'whiteAlpha.200'}
+            onClick={() => {
+              dispatch({
+                type: 'setBgParty',
+                payload: !bgParty,
+              })
+            }}
+          />
+          <Spacer />
           <IconButton
             aria-label="Prev"
             icon={<Icon as={Prev} />}

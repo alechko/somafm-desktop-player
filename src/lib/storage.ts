@@ -3,6 +3,8 @@ import _ from 'lodash'
 type LocalStateType = {
   volume?: number | undefined
   station?: string | undefined
+  bgImage?: boolean | undefined
+  bgParty?: boolean | undefined
   favs?: string[] | undefined
 }
 
