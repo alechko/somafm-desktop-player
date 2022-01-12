@@ -1,12 +1,11 @@
-import { useContext } from 'react'
 import ReactPlayer from 'react-player'
-import { MainContext } from '../../lib/context'
+import { useMainContext } from '../../lib/context'
 import { getStationUrl } from '../../lib/somafm'
 
 export const Player = () => {
   const {
     state: { playing, volume, station },
-  } = useContext(MainContext)
+  } = useMainContext()
 
   if (!playing || !station) {
     return <></>

@@ -1,6 +1,5 @@
 import { Box, Center, HStack, VStack } from '@chakra-ui/react'
-import { useContext } from 'react'
-import { MainContext } from '../../lib/context'
+import { useMainContext } from '../../lib/context'
 import { Controls } from '../player/controls'
 import { StationCard } from '../player/station-card'
 import { Side } from './side'
@@ -8,7 +7,7 @@ import { Side } from './side'
 export const Home = () => {
   const {
     state: { playing, station, bgImage, bgParty },
-  } = useContext(MainContext)
+  } = useMainContext()
   return (
     <Box
       h="full"

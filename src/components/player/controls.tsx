@@ -11,16 +11,16 @@ import {
   SliderTrack,
   Spacer,
 } from '@chakra-ui/react'
-import { useContext, useEffect } from 'react'
-import { MainContext } from '../../lib/context'
-import { Play, Pause, Next, Prev, Img, DropInvert } from '../icons'
+import { useEffect } from 'react'
+import { useMainContext } from '../../lib/context'
+import { DropInvert, Img, Next, Pause, Play, Prev } from '../icons'
 import { Player } from './player'
 
 export const Controls = (props: BoxProps) => {
   const {
     state: { playing, station, stations, volume, bgImage, bgParty },
     dispatch,
-  } = useContext(MainContext)
+  } = useMainContext()
 
   const onKeyPress = (e: KeyboardEvent) => {
     switch (e.code) {
@@ -28,13 +28,15 @@ export const Controls = (props: BoxProps) => {
         e.preventDefault()
         if (playing) {
           dispatch({
-            type: 'stop',
+            type: 'pause',
           })
         } else {
-          dispatch({
-            type: 'play',
-            payload: { data: station },
-          })
+          if (station) {
+            dispatch({
+              type: 'play',
+              payload: { data: station },
+            })
+          }
         }
         break
     }
@@ -44,7 +46,25 @@ export const Controls = (props: BoxProps) => {
     return () => {
       window.removeEventListener('keydown', onKeyPress)
     }
-  }, [playing])
+  }, [playing, station])
+
+  useEffect(
+    () =>
+      window.Main.on('playToggle', (playing: boolean | undefined) => {
+        console.log('playing', typeof playing)
+        if (playing) {
+          dispatch({
+            type: 'pause',
+          })
+        } else {
+          dispatch({
+            type: station ? 'play' : 'resume',
+            payload: station ? { data: station } : {},
+          })
+        }
+      }),
+    []
+  )
 
   return (
     <Box {...props}>

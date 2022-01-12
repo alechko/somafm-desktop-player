@@ -1,13 +1,13 @@
 import { Box, BoxProps, Flex, Icon, IconButton, Select, Spacer } from '@chakra-ui/react'
-import { useContext, useEffect } from 'react'
-import { MainContext } from '../../lib/context'
+import { useEffect } from 'react'
+import { useMainContext } from '../../lib/context'
 import { SortAz, SortZa } from '../icons'
 
 export const Filter = (props: BoxProps) => {
   const {
     state: { sortBy, sortOrder },
     dispatch,
-  } = useContext(MainContext)
+  } = useMainContext()
 
   useEffect(() => {
     dispatch({

@@ -1,6 +1,6 @@
 import { Box, BoxProps, Flex, HStack, Image, Link, Text, Tooltip, VStack } from '@chakra-ui/react'
-import { useContext, useEffect } from 'react'
-import { MainContext } from '../../lib/context'
+import { useEffect } from 'react'
+import { useMainContext } from '../../lib/context'
 import { getAllStations } from '../../lib/somafm'
 import { Filter } from '../player/filter'
 
@@ -8,7 +8,7 @@ export const Side = (props: BoxProps) => {
   const {
     state: { stations, station },
     dispatch,
-  } = useContext(MainContext)
+  } = useMainContext()
   useEffect(() => {
     getAllStations().then(r => {
       dispatch({

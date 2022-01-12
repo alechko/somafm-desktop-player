@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { createContext, FC, useReducer, Dispatch } from 'react'
+import { createContext, FC, useReducer, Dispatch, useContext } from 'react'
 import { getState, saveState } from './storage'
 
 type PlaylistType = {
@@ -67,25 +67,46 @@ const mainReducer = (state: MainStateType, action: any) => {
   switch (action.type) {
     case 'play':
       saveState({ station: action.payload.data.id })
+      window.Main.sendMessage('playing', true)
       return {
         ...state,
         station: action.payload.data,
         playing: true,
       }
     case 'stop':
+      window.Main.sendMessage('playing', false)
+      return {
+        ...state,
+        playing: false,
+        station: null,
+      }
+    case 'pause':
+      window.Main.sendMessage('playing', false)
       return {
         ...state,
         playing: false,
       }
+    case 'resume':
+      window.Main.sendMessage('playing', true)
+      return {
+        ...state,
+        playing: true,
+      }
     case 'setStations':
       // eslint-disable-next-line no-case-declarations
       const localState = getState()
+      // eslint-disable-next-line no-case-declarations
+      const station =
+        localState && localState.station
+          ? action.payload.data.find((v: StationType) => v.id === localState.station)
+          : null
+      // eslint-disable-next-line no-case-declarations
+      const playing = !!station
+      playing && window.Main.sendMessage('playing', true)
       return {
         ...state,
-        station: localState
-          ? action.payload.data.find((v: StationType) => v.id === localState.station)
-          : null,
-        playing: true,
+        station,
+        playing: playing,
         volume: localState && localState.volume ? localState.volume : state.volume,
         stations: sortStations(action.payload.data, state.sortBy, state.sortOrder),
       }
@@ -143,6 +164,8 @@ export const MainContext = createContext<{ state: MainStateType; dispatch: Dispa
   state: initState,
   dispatch: () => null,
 })
+
+export const useMainContext = () => useContext(MainContext)
 
 export const MainProvider: FC = ({ children }) => {
   const [state, dispatch] = useReducer(mainReducer, initState)

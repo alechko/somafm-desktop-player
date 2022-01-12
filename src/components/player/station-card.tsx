@@ -9,8 +9,8 @@ import {
   useInterval,
   VStack,
 } from '@chakra-ui/react'
-import { useContext, useEffect, useState } from 'react'
-import { MainContext } from '../../lib/context'
+import { useEffect, useState } from 'react'
+import { useMainContext } from '../../lib/context'
 import { getSongsList } from '../../lib/somafm'
 import { Music } from '../icons'
 import { SongCard } from './song-card'
@@ -26,7 +26,7 @@ export type SongType = {
 export const StationCard = (props: BoxProps) => {
   const {
     state: { station },
-  } = useContext(MainContext)
+  } = useMainContext()
 
   const [songs, setSongs] = useState<SongType[]>([])
 
