@@ -17,6 +17,8 @@ jobs:
           node-version: 16
       - name: install dependencies
         run: yarn install
+      - name: test
+        run: yarn test
       - name: build
         run: yarn make
 
@@ -43,5 +45,7 @@ jobs:
           node-version: 16
       - name: install dependencies
         run: yarn install
+      - name: test
+        run: yarn test
       - name: build
         run: yarn make

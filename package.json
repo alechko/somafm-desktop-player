@@ -1,5 +1,5 @@
 {
-  "name": "somafm-player-desktop",
+  "name": "somafm-desktop-player",
   "productName": "SomaFM Desktop Player",
   "author": {
     "name": "alechko",
@@ -117,7 +117,7 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "SomaFM Desktop Player"
+            "name": "SomaFMDesktopPlayer"
           }
         },
         {
