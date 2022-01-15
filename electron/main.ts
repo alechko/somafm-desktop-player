@@ -49,7 +49,7 @@ const menuTemplate: MenuItemConstructorOptions[] = [
     label: 'Play',
     enabled: false,
     click: event => {
-      mainWindow && playing && mainWindow.webContents.send('playToggle', playing)
+      mainWindow && playing !== null && mainWindow.webContents.send('playToggle', playing)
     },
     accelerator: 'Space',
   },

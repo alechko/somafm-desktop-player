@@ -50,8 +50,8 @@ export const Controls = (props: BoxProps) => {
 
   useEffect(
     () =>
+      window.Main &&
       window.Main.on('playToggle', (playing: boolean | undefined) => {
-        console.log('playing', typeof playing)
         if (playing) {
           dispatch({
             type: 'pause',

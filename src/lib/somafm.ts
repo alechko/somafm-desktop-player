@@ -1,11 +1,13 @@
+import axios from 'axios'
+
 const baseUrl = 'https://api.somafm.com'
 const iceUrl = 'https://ice.somafm.com'
 
 export const getAllStations = async () => {
   const url = `${baseUrl}/channels.json`
-  return fetch(url)
-    .then(r => r.json())
-    .then(r => r)
+  return axios
+    .get(url)
+    .then(r => r.data)
     .catch(e => console.error(e))
 }
 
@@ -16,8 +18,8 @@ export const getStationUrl = (id: string) => {
 
 export const getSongsList = async (id: string) => {
   const url = `${baseUrl}/songs/${id}.json`
-  return fetch(url)
-    .then(r => r.json())
-    .then(r => r)
+  return axios
+    .get(url)
+    .then(r => r.data)
     .catch(e => console.error(e))
 }
