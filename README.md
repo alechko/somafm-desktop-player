@@ -13,7 +13,6 @@ Built based on [Electron + TypeScript + React](https://github.com/diego3g/electr
 
 - [ ] Add settings
 - [ ] Add some animations
-- [ ] Github actions
 
 ### Optional
 
