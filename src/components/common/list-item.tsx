@@ -1,18 +1,24 @@
 import { Box } from '@chakra-ui/react'
-import { motion, MotionProps, usePresence } from 'framer-motion'
+import { motion, MotionProps, Transition, usePresence } from 'framer-motion'
 
 const MotionBox = motion(Box)
 
-const transition = { type: 'spring', stiffness: 500, damping: 150, mass: 1 }
-
 type ListItemProps = {
   animation?: MotionProps
+  transition?: Transition
   children: any
 }
 
-export const ListItem = ({ animation, children }: ListItemProps) => {
+export const ListItem = ({ animation, transition, children }: ListItemProps) => {
   const [isPresent, safeToRemove] = usePresence()
-  const animations: MotionProps = {
+  const transitionProps = {
+    type: 'spring',
+    stiffness: 500,
+    damping: 50,
+    mass: 1,
+    ...transition,
+  }
+  const animationProps: MotionProps = {
     layout: true,
     initial: 'out',
     style: {
@@ -23,15 +29,15 @@ export const ListItem = ({ animation, children }: ListItemProps) => {
     variants: {
       in: { scaleY: 1, opacity: 1 },
       out: { scaleY: 0, opacity: 0, zIndex: -1 },
-      tapped: { scale: 0.98, opacity: 0.5, transition: { duration: 0.1 } },
+      hover: { scale: 1.05, transition: { duration: 0.25 } },
+      tapped: { scale: 0.95, opacity: 0.5, transition: { duration: 0.25 } },
     },
     onAnimationComplete: () => {
       !isPresent && typeof safeToRemove === 'function' && safeToRemove()
     },
-    transition,
+    transition: transitionProps,
+    ...animation,
   }
 
-  const props = Object.assign({}, animations, animation)
-
-  return <MotionBox {...props}>{children}</MotionBox>
+  return <MotionBox {...animationProps}>{children}</MotionBox>
 }
