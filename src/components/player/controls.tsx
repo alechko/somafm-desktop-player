@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react'
 import { useEffect } from 'react'
 import { useMainContext } from '../../lib/context'
-import { DropInvert, Img, Next, Pause, Play, Prev } from '../icons'
+import { DropInvert, Img, Next, Pause, Play, Prev } from '../common/icons'
 import { Player } from './player'
 
 export const Controls = (props: BoxProps) => {

@@ -1,7 +1,7 @@
 import { Box, BoxProps, Flex, Icon, IconButton, Select, Spacer } from '@chakra-ui/react'
 import { useEffect } from 'react'
 import { useMainContext } from '../../lib/context'
-import { SortAz, SortZa } from '../icons'
+import { SortAz, SortZa } from '../common/icons'
 
 export const Filter = (props: BoxProps) => {
   const {

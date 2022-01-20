@@ -10,5 +10,5 @@ const songMock = {
 }
 
 test('song card should render', () => {
-  render(<SongCard song={songMock} current={false} />)
+  render(<SongCard song={songMock} index={0} last={false} />)
 })

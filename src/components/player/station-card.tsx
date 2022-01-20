@@ -9,10 +9,12 @@ import {
   useInterval,
   VStack,
 } from '@chakra-ui/react'
+import { AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { useMainContext } from '../../lib/context'
 import { getSongsList } from '../../lib/somafm'
-import { Music } from '../icons'
+import { Music } from '../common/icons'
+import { ListItem } from '../common/list-item'
 import { SongCard } from './song-card'
 
 export type SongType = {
@@ -38,9 +40,9 @@ export const StationCard = (props: BoxProps) => {
 
   useInterval(() => {
     if (station) {
-      getSongsList(station.id).then(r => setSongs(r.songs))
+      getSongsList(station.id).then(r => r.songs !== songs && setSongs(r.songs))
     }
-  }, 1000 * 60)
+  }, 1000 * 30)
 
   if (!station) {
     return (
@@ -56,7 +58,7 @@ export const StationCard = (props: BoxProps) => {
   return (
     <Box bg="blackAlpha.500" w="full" h="full" rounded="md" overflow="auto" {...props}>
       <Flex h="full" w=" full" p={8} justifyContent="start" alignItems="start">
-        <VStack w="full" bg="blackAlpha.700" rounded="md" p={8}>
+        <VStack w="full" bg="blackAlpha.700" rounded="md" p={8} minH="full">
           <Flex justifyContent="center" alignItems="center" w="full">
             <Box flexGrow={1}>
               <Heading textAlign="center">{station.title}</Heading>
@@ -70,9 +72,16 @@ export const StationCard = (props: BoxProps) => {
             </VStack>
           </Flex>
           <Box h="full" w="full">
-            <VStack h="full" w="full" spacing={8}>
-              {songs && songs.map((song, i) => <SongCard key={i} song={song} current={i === 0} />)}
-            </VStack>
+            {/* <VStack h="full" w="full" spacing={8}> */}
+            <AnimatePresence>
+              {songs &&
+                songs.map((song, i) => (
+                  <ListItem key={song.title}>
+                    <SongCard song={song} index={i} last={i === songs.length - 1} />
+                  </ListItem>
+                ))}
+            </AnimatePresence>
+            {/* </VStack> */}
           </Box>
         </VStack>
       </Flex>

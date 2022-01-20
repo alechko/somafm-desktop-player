@@ -1,26 +1,33 @@
 import { Box, BoxProps, Center, Flex, HStack, Spacer, Text, VStack } from '@chakra-ui/react'
-import { Disc } from '../icons'
+import { Disc } from '../common/icons'
+import { RotatingItem } from '../common/rotating-item'
 import { SongType } from './station-card'
 
 type SongCardProps = {
-  current: boolean
+  index: number
+  last: boolean
   song: SongType
   props?: BoxProps
 }
 
-export const SongCard = ({ song, current, ...rest }: SongCardProps) => {
+export const SongCard = ({ song, index, last, ...rest }: SongCardProps) => {
   return (
     <Box
       border="thin"
       rounded="sm"
-      bg={current ? 'whiteAlpha.300' : 'whiteAlpha.100'}
+      bg={index === 0 ? 'whiteAlpha.200' : `blackAlpha.${(index + 1) * 100}`}
+      fontWeight={index === 0 ? 'bold' : 'normal'}
+      opacity={index > 0 ? 1 - index / 10 : 1}
+      mb={!last ? 2 : 0}
       w="full"
       {...rest}
     >
       <Flex p={4}>
         <Center>
           <HStack space={4}>
-            <Disc height={8} width={8} color="whiteAlpha.400" />
+            <RotatingItem enabled={index === 0}>
+              <Disc height={8} width={8} color="whiteAlpha.400" />
+            </RotatingItem>
             <Text>{song.title}</Text>
           </HStack>
         </Center>
@@ -32,7 +39,7 @@ export const SongCard = ({ song, current, ...rest }: SongCardProps) => {
           </HStack>
           <HStack>
             <Text color="whiteAlpha.400">From</Text>
-            <Text color="whiteAlpha.600">{song.album}</Text>
+            <Text color="whiteAlpha.600">{song.album || '-'}</Text>
           </HStack>
         </VStack>
       </Flex>
