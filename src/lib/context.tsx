@@ -24,6 +24,7 @@ export type StationType = {
   preroll: []
   listeners: number
   lastPlaying: string
+  fav: boolean
 }
 
 type MainStateType = {
@@ -35,32 +36,15 @@ type MainStateType = {
   sortOrder: 'asc' | 'desc'
   bgImage: boolean
   bgParty: boolean
+  favs: string[]
 }
-
-// type MainContextActions = {
-//   play: (data: any) => void
-//   stop: () => void
-//   setStations: (data: StationType[]) => void
-//   setVolume: (volume: number) => void
-// }
 
 const sortStations = (
   stations: StationType[],
   sortBy: string,
   sortOrder: 'asc' | 'desc'
 ): StationType[] => {
-  return _.orderBy(
-    stations,
-    (o: StationType) => {
-      if (sortBy === 'listeners') {
-        return Number(o[sortBy])
-      }
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      return o[sortBy]
-    },
-    sortOrder
-  )
+  return _.orderBy(stations, ['fav', sortBy], ['desc', sortOrder])
 }
 
 const mainReducer = (state: MainStateType, action: any) => {
@@ -103,12 +87,25 @@ const mainReducer = (state: MainStateType, action: any) => {
       // eslint-disable-next-line no-case-declarations
       const playing = !!station
       playing && window.Main.sendMessage('playing', true)
+      // eslint-disable-next-line no-case-declarations
+      const stations = action.payload.data.map((s: StationType) => {
+        const fav =
+          localState &&
+          typeof localState.favs !== 'undefined' &&
+          localState.favs.indexOf(s.id) !== -1
+        return {
+          ...s,
+          title: s.title.charAt(0).toUpperCase() + s.title.slice(1),
+          listeners: Number(s.listeners),
+          fav,
+        }
+      })
       return {
         ...state,
         station,
         playing: playing,
         volume: localState && localState.volume ? localState.volume : state.volume,
-        stations: sortStations(action.payload.data, state.sortBy, state.sortOrder),
+        stations: sortStations(stations, state.sortBy, state.sortOrder),
       }
     case 'sortStations':
       return {
@@ -122,11 +119,13 @@ const mainReducer = (state: MainStateType, action: any) => {
         volume: action.payload,
       }
     case 'setSortBy':
+      saveState({ sortBy: action.payload })
       return {
         ...state,
         sortBy: action.payload,
       }
     case 'setSortOrder':
+      saveState({ sortOrder: action.payload })
       return {
         ...state,
         sortOrder: action.payload,
@@ -143,6 +142,20 @@ const mainReducer = (state: MainStateType, action: any) => {
         ...state,
         bgParty: action.payload,
       }
+    case 'toggleFavorite':
+      // eslint-disable-next-line no-case-declarations
+      const favs = _.xor(state.favs, [action.payload])
+      saveState({ favs })
+      // eslint-disable-next-line no-case-declarations
+      const i = _.findIndex(state.stations, { id: action.payload })
+      if (i !== -1) {
+        state.stations[i].fav = !state.stations[i].fav
+      }
+      return {
+        ...state,
+        stations: sortStations(state.stations, state.sortBy, state.sortOrder),
+        favs,
+      }
     default:
       return state
   }
@@ -155,10 +168,12 @@ const initState: MainStateType = {
   station: null,
   volume: localState && localState.volume ? localState.volume : 0.5,
   playing: false,
-  sortBy: 'listeners',
-  sortOrder: 'desc',
+  sortBy: localState && typeof localState.sortBy !== 'undefined' ? localState.sortBy : 'listeners',
+  sortOrder:
+    localState && typeof localState.sortOrder !== 'undefined' ? localState.sortOrder : 'desc',
   bgImage: localState && typeof localState.bgImage !== 'undefined' ? localState.bgImage : true,
   bgParty: localState && typeof localState.bgParty !== 'undefined' ? localState.bgParty : true,
+  favs: localState && typeof localState.favs !== 'undefined' ? localState.favs : [],
 }
 export const MainContext = createContext<{ state: MainStateType; dispatch: Dispatch<any> }>({
   state: initState,

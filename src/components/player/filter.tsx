@@ -1,7 +1,7 @@
 import { Box, BoxProps, Flex, Icon, IconButton, Select, Spacer } from '@chakra-ui/react'
 import { useEffect } from 'react'
 import { useMainContext } from '../../lib/context'
-import { SortAz, SortZa } from '../common/icons'
+import { SortAsc, SortDesc } from '../common/icons'
 
 export const Filter = (props: BoxProps) => {
   const {
@@ -41,25 +41,12 @@ export const Filter = (props: BoxProps) => {
         <Spacer />
         <Box>
           <IconButton
-            icon={<Icon as={SortAz} color={sortOrder === 'asc' ? 'red.500' : 'whiteAlpha.400'} />}
-            aria-label="Sort Asc"
-            variant="ghost"
+            icon={<Icon as={sortOrder === 'asc' ? SortAsc : SortDesc} color="whiteAlpha.600" />}
+            aria-label={`Sort ${sortOrder === 'asc' ? 'desc' : 'asc'}`}
             onClick={() => {
               dispatch({
                 type: 'setSortOrder',
-                payload: 'asc',
-              })
-            }}
-          />
-          <IconButton
-            icon={<Icon as={SortZa} />}
-            color={sortOrder === 'desc' ? 'red.500' : 'whiteAlpha.400'}
-            aria-label="Sort Desc"
-            variant="ghost"
-            onClick={() => {
-              dispatch({
-                type: 'setSortOrder',
-                payload: 'desc',
+                payload: sortOrder === 'asc' ? 'desc' : 'asc',
               })
             }}
           />
