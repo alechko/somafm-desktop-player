@@ -10,13 +10,15 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react'
-import { AnimatePresence } from 'framer-motion'
-import { useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { useEffect, useRef } from 'react'
 import { useMainContext } from '../../lib/context'
 import { getAllStations } from '../../lib/somafm'
 import { Headphones, HeartOutline, HeartSolid, Play } from '../common/icons'
 import { ListItem } from '../common/list-item'
 import { Filter } from '../player/filter'
+
+const Overlay = motion<BoxProps>(Box)
 
 export const Side = (props: BoxProps) => {
   const {
@@ -34,21 +36,28 @@ export const Side = (props: BoxProps) => {
     })
   }, [])
 
+  const constraintRef = useRef(null)
+
   return (
     <Box
       w="sm"
       h="full"
       rounded="md"
-      overflow="auto"
+      overflow="hidden"
       p={4}
       bg="blackAlpha.500"
       _hover={{
-        bg: 'blackAlpha.700',
+        bg: 'blackAlpha.900',
       }}
       className="no-drag"
+      ref={constraintRef}
     >
-      <Filter mb={2} />
-      <AnimatePresence initial={false}>
+      <Overlay
+        drag="y"
+        dragConstraints={constraintRef}
+        dragTransition={{ bounceStiffness: 600, bounceDamping: 100 }}
+      >
+        <Filter mb={2} />
         {stations.map((item, index) => (
           <ListItem
             key={item.title}
@@ -70,17 +79,7 @@ export const Side = (props: BoxProps) => {
               className="no-select"
             >
               <HStack>
-                <HStack
-                  spacing={4}
-                  w="full"
-                  onClick={e => {
-                    dispatch({
-                      type: 'play',
-                      payload: { data: item },
-                    })
-                  }}
-                  cursor="pointer"
-                >
+                <HStack spacing={4} w="full" cursor="pointer">
                   <Image src={item.image} alt={item.description} w={12} h={12} />
                   <Box w="full">
                     <VStack w="full">
@@ -143,7 +142,7 @@ export const Side = (props: BoxProps) => {
             </Box>
           </ListItem>
         ))}
-      </AnimatePresence>
+      </Overlay>
     </Box>
   )
 }

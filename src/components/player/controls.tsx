@@ -75,7 +75,7 @@ export const Controls = (props: BoxProps) => {
         h="32"
         rounded="md"
         _hover={{
-          bg: 'blackAlpha.700',
+          bg: 'blackAlpha.900',
         }}
       >
         <HStack spacing={4}>
