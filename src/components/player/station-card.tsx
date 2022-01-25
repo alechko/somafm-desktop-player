@@ -27,7 +27,7 @@ export type SongType = {
 
 export const StationCard = (props: BoxProps) => {
   const {
-    state: { station },
+    state: { station, playing },
   } = useMainContext()
 
   const [songs, setSongs] = useState<SongType[]>([])
@@ -39,7 +39,7 @@ export const StationCard = (props: BoxProps) => {
   }, [station])
 
   useInterval(() => {
-    if (station) {
+    if (station && playing) {
       getSongsList(station.id).then(r => r.songs !== songs && setSongs(r.songs))
     }
   }, 1000 * 30)

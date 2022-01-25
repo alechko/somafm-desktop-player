@@ -1,4 +1,5 @@
 import { Box, BoxProps, Center, Flex, HStack, Spacer, Text, VStack } from '@chakra-ui/react'
+import { useMainContext } from '../../lib/context'
 import { Disc } from '../common/icons'
 import { RotatingItem } from '../common/rotating-item'
 import { SongType } from './station-card'
@@ -11,6 +12,9 @@ type SongCardProps = {
 }
 
 export const SongCard = ({ song, index, last, ...rest }: SongCardProps) => {
+  const {
+    state: { playing },
+  } = useMainContext()
   return (
     <Box
       border="thin"
@@ -25,7 +29,7 @@ export const SongCard = ({ song, index, last, ...rest }: SongCardProps) => {
       <Flex p={4}>
         <Center>
           <HStack space={4}>
-            <RotatingItem enabled={index === 0}>
+            <RotatingItem enabled={index === 0 && playing}>
               <Disc height={8} width={8} color="whiteAlpha.400" />
             </RotatingItem>
             <Text>{song.title}</Text>
