@@ -39,5 +39,9 @@ export const ListItem = ({ animation, transition, children }: ListItemProps) => 
     ...animation,
   }
 
-  return <MotionBox {...animationProps}>{children}</MotionBox>
+  return (
+    <MotionBox role="group" {...animationProps}>
+      {children}
+    </MotionBox>
+  )
 }

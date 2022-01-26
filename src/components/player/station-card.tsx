@@ -61,7 +61,14 @@ export const StationCard = (props: BoxProps) => {
         <VStack w="full" bg="blackAlpha.700" rounded="md" p={8} minH="full">
           <Flex justifyContent="center" alignItems="center" w="full">
             <Box flexGrow={1}>
-              <Heading textAlign="center">{station.title}</Heading>
+              <Heading
+                textAlign="center"
+                bg="white"
+                bgGradient="linear(to-b, #7928CA40, #FF008060)"
+                bgClip="text"
+              >
+                {station.title}
+              </Heading>
               <VStack color="whiteAlpha.600">
                 <Text>DJ: {station.dj}</Text>
                 <Text fontSize={12}>{station.djmail}</Text>

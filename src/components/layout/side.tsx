@@ -70,7 +70,7 @@ export const Side = (props: BoxProps) => {
               key={item.id}
               bg={station && item.id === station.id ? 'whiteAlpha.300' : 'whiteAlpha.50'}
               _hover={{
-                bg: 'whiteAlpha.100',
+                bgGradient: 'linear(to-t, #081d8622, #00d4ff22)',
               }}
               w="full"
               p={2}
@@ -80,34 +80,42 @@ export const Side = (props: BoxProps) => {
             >
               <HStack>
                 <HStack spacing={4} w="full" cursor="pointer">
-                  <Image src={item.image} alt={item.description} w={12} h={12} />
+                  <Tooltip
+                    label={item.description}
+                    aria-label="Radio description"
+                    openDelay={500}
+                    bg="blackAlpha.700"
+                    color="white"
+                    rounded="md"
+                    p={4}
+                  >
+                    <Image
+                      src={item.image}
+                      alt={item.description}
+                      w={12}
+                      h={12}
+                      _hover={{
+                        opacity: 0.92,
+                      }}
+                    />
+                  </Tooltip>
                   <Box w="full">
                     <VStack w="full">
-                      <Tooltip
-                        label={item.description}
-                        aria-label="Radio description"
-                        openDelay={500}
-                        bg="blackAlpha.700"
-                        color="white"
-                        rounded="md"
-                        p={4}
-                      >
-                        <Flex w="full">
-                          <Box flexGrow={1}>
-                            <VStack alignItems="start">
-                              <Text fontWeight="bold">{item.title}</Text>
-                              <Text fontSize={12} color="whiteAlpha.400">
-                                {item.genre.replace('|', ', ')}
-                              </Text>
-                            </VStack>
-                          </Box>
-                        </Flex>
-                      </Tooltip>
+                      <Flex w="full">
+                        <Box flexGrow={1}>
+                          <VStack alignItems="start">
+                            <Text fontWeight="bold">{item.title}</Text>
+                            <Text fontSize={12} color="whiteAlpha.400">
+                              {item.genre.replace('|', ', ')}
+                            </Text>
+                          </VStack>
+                        </Box>
+                      </Flex>
                     </VStack>
                   </Box>
                 </HStack>
                 <VStack>
-                  <HStack color="whiteAlpha.600">
+                  <HStack color="whiteAlpha.600" w="full" justify="end">
                     <Headphones height={4} width={4} />
                     <Text fontSize={12} fontWeight="bold">
                       {item.listeners}
@@ -115,24 +123,31 @@ export const Side = (props: BoxProps) => {
                   </HStack>
                   <HStack>
                     <IconButton
-                      aria-label="Favorite station"
-                      size="sm"
-                      icon={<Icon color="red.500" as={item.fav ? HeartSolid : HeartOutline} />}
-                      onClick={e => {
-                        dispatch({
-                          type: 'toggleFavorite',
-                          payload: item.id,
-                        })
-                      }}
-                    />
-                    <IconButton
                       aria-label="Play station"
                       size="sm"
+                      width={16}
+                      _groupHover={{
+                        bgGradient: 'linear(to-b, #7928CA80, #FF008080)',
+                      }}
                       icon={<Icon as={Play} />}
                       onClick={() => {
                         dispatch({
                           type: 'play',
                           payload: { data: item },
+                        })
+                      }}
+                    />
+                    <IconButton
+                      aria-label="Favorite station"
+                      size="sm"
+                      _groupHover={{
+                        bgGradient: 'linear(to-b, #7928CA40, #FF008040)',
+                      }}
+                      icon={<Icon color="red.500" as={item.fav ? HeartSolid : HeartOutline} />}
+                      onClick={e => {
+                        dispatch({
+                          type: 'toggleFavorite',
+                          payload: item.id,
                         })
                       }}
                     />
