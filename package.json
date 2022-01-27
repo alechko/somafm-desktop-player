@@ -128,7 +128,20 @@
         },
         {
           "name": "@electron-forge/maker-dmg",
-          "config": {},
+          "config": {
+            "additionalDMGOptions": {
+              "window": {
+                "size": {
+                  "position": {
+                    "x": 100,
+                    "y": 200
+                  },
+                  "width": 658,
+                  "height": 580
+                }
+              }
+            }
+          },
           "platforms": [
             "darwin"
           ]
