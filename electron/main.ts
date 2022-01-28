@@ -59,7 +59,6 @@ const PlayMenuItemTemplate = (): MenuItemConstructorOptions => {
     label: playing ? 'Pause' : 'Play',
     enabled: true,
     click: event => {
-      console.log(event)
       mainWindow && playing !== null && mainWindow.webContents.send('playToggle', playing)
     },
     accelerator: 'Space',
@@ -76,7 +75,7 @@ function createTray() {
     { role: 'quit' },
   ]
   const image = nativeImage.createFromPath(iconPath)
-  tray = new Tray(image.resize({ width: 16, height: 16 }))
+  tray = tray || new Tray(image.resize({ width: 16, height: 16 }))
   contextMenu = Menu.buildFromTemplate(trayTemplate)
   tray.setToolTip('SomaFM Desktop Player')
   tray.setContextMenu(contextMenu)
