@@ -1,12 +1,15 @@
 import {
   app,
+  shell,
   BrowserWindow,
   ipcMain,
   Menu,
   MenuItemConstructorOptions,
   nativeImage,
+  nativeTheme,
   Tray,
 } from 'electron'
+import defaultMenu from 'electron-default-menu'
 import path from 'path'
 
 let mainWindow: BrowserWindow | null
@@ -20,6 +23,9 @@ declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string
 const assetsPath = process.env.NODE_ENV === 'production' ? process.resourcesPath : app.getAppPath()
 const iconPath = path.join(assetsPath, 'assets', 'icon.png')
 
+const darkBackgroundColor = 'black'
+const lightBackgroundColor = 'white'
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     icon: iconPath,
@@ -27,6 +33,8 @@ function createWindow() {
     height: 700,
     titleBarStyle: 'hiddenInset',
     title: 'SomaFM Desktop Player',
+    show: false,
+    backgroundColor: nativeTheme.shouldUseDarkColors ? darkBackgroundColor : lightBackgroundColor,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -39,30 +47,50 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
+
+  mainWindow.once('ready-to-show', () => {
+    mainWindow && mainWindow.show()
+  })
 }
 
-const menuTemplate: MenuItemConstructorOptions[] = [
-  { role: 'about' },
-  { type: 'separator' },
-  {
+const PlayMenuItemTemplate = (): MenuItemConstructorOptions => {
+  return {
     id: 'playing',
-    label: 'Play',
-    enabled: false,
+    label: playing ? 'Pause' : 'Play',
+    enabled: true,
     click: event => {
+      console.log(event)
       mainWindow && playing !== null && mainWindow.webContents.send('playToggle', playing)
     },
     accelerator: 'Space',
-  },
-  { type: 'separator' },
-  { role: 'quit' },
-]
+  }
+}
 
 function createTray() {
+  const PlayMenuItem = PlayMenuItemTemplate()
+  const trayTemplate: MenuItemConstructorOptions[] = [
+    { role: 'about' },
+    { type: 'separator' },
+    { ...PlayMenuItem },
+    { type: 'separator' },
+    { role: 'quit' },
+  ]
   const image = nativeImage.createFromPath(iconPath)
   tray = new Tray(image.resize({ width: 16, height: 16 }))
-  contextMenu = Menu.buildFromTemplate(menuTemplate)
+  contextMenu = Menu.buildFromTemplate(trayTemplate)
   tray.setToolTip('SomaFM Desktop Player')
   tray.setContextMenu(contextMenu)
+}
+
+function createMenu() {
+  const PlayMenuItem = PlayMenuItemTemplate()
+  const menu = defaultMenu(app, shell)
+  menu.splice(4, 0, {
+    label: 'Controls',
+    submenu: [{ ...PlayMenuItem }],
+  })
+
+  Menu.setApplicationMenu(Menu.buildFromTemplate(menu))
 }
 
 async function registerListeners() {
@@ -76,19 +104,16 @@ async function registerListeners() {
     console.log('PLAYING', message)
     playing = message
 
-    if (tray && contextMenu) {
-      menuTemplate[2].enabled = true
-      menuTemplate[2].label = playing ? 'Pause' : 'Play'
-      contextMenu = Menu.buildFromTemplate(menuTemplate)
-      tray.setContextMenu(contextMenu)
-    }
+    createTray()
+    createMenu()
   })
 }
 
 app
   .on('ready', () => {
-    createTray()
     createWindow()
+    createTray()
+    createMenu()
   })
   .whenReady()
   .then(registerListeners)

@@ -22,32 +22,6 @@ export const Controls = (props: BoxProps) => {
     dispatch,
   } = useMainContext()
 
-  const onKeyPress = (e: KeyboardEvent) => {
-    switch (e.code) {
-      case 'Space':
-        e.preventDefault()
-        if (playing) {
-          dispatch({
-            type: 'pause',
-          })
-        } else {
-          if (station) {
-            dispatch({
-              type: 'play',
-              payload: { data: station },
-            })
-          }
-        }
-        break
-    }
-  }
-  useEffect(() => {
-    window.addEventListener('keydown', onKeyPress)
-    return () => {
-      window.removeEventListener('keydown', onKeyPress)
-    }
-  }, [playing, station])
-
   useEffect(
     () =>
       window.Main &&
