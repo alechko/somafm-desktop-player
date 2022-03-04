@@ -9,15 +9,6 @@ SomaFM desktop player is a small project to practice Electron with React.
 
 Built based on [Electron + TypeScript + React](https://github.com/diego3g/electron-typescript-react) template with Chakra UI.
 
-## Todo
-
-- [ ] Add settings
-- [ ] Add some animations
-
-### Optional
-
-- [ ] Migrate from Chakra UI to custom components with [Stitches](https://stitches.dev/)
-
 ## Local Installation
 
 Use a package manager of your choice (npm, yarn, etc.) in order to install all dependencies
