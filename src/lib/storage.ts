@@ -3,6 +3,7 @@ import _ from 'lodash'
 type LocalStateType = {
   volume?: number | undefined
   station?: string | undefined
+  device?: string | undefined
   sortBy?: string | undefined
   sortOrder?: 'asc' | 'desc' | undefined
   bgImage?: boolean | undefined

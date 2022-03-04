@@ -5,20 +5,24 @@ import {
   HStack,
   Icon,
   IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Slider,
   SliderFilledTrack,
   SliderThumb,
   SliderTrack,
   Spacer,
 } from '@chakra-ui/react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useMainContext } from '../../lib/context'
-import { DropInvert, Img, Next, Pause, Play, Prev } from '../common/icons'
+import { Check, DropInvert, Headphones, Img, Next, Pause, Play, Prev } from '../common/icons'
 import { Player } from './player'
 
 export const Controls = (props: BoxProps) => {
   const {
-    state: { playing, station, stations, volume, bgImage, bgParty },
+    state: { playing, station, stations, volume, bgImage, bgParty, device },
     dispatch,
   } = useMainContext()
 
@@ -39,6 +43,18 @@ export const Controls = (props: BoxProps) => {
       }),
     []
   )
+
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
+  useEffect(() => {
+    if (navigator.mediaDevices && typeof navigator.mediaDevices.enumerateDevices === 'function') {
+      navigator.mediaDevices
+        .enumerateDevices()
+        .then(mediaDevices => {
+          setDevices(mediaDevices.filter(({ kind }) => kind === 'audiooutput'))
+        })
+        .catch(e => console.error(e))
+    }
+  }, [])
 
   return (
     <Box {...props}>
@@ -146,6 +162,26 @@ export const Controls = (props: BoxProps) => {
             </SliderTrack>
             <SliderThumb />
           </Slider>
+          <Menu>
+            <MenuButton as={IconButton} icon={<Icon as={Headphones} />} />
+            <MenuList>
+              {devices.map(({ deviceId, label }: MediaDeviceInfo) => (
+                <MenuItem
+                  key={deviceId}
+                  icon={device && device === deviceId ? <Icon as={Check} /> : <></>}
+                  iconSpacing={4}
+                  onClick={() =>
+                    dispatch({
+                      type: 'setDevice',
+                      payload: deviceId,
+                    })
+                  }
+                >
+                  {label}
+                </MenuItem>
+              ))}
+            </MenuList>
+          </Menu>
         </HStack>
       </Center>
     </Box>

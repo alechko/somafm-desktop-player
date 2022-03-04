@@ -32,6 +32,7 @@ type MainStateType = {
   station: StationType | null
   playing: boolean
   volume: number
+  device: string | undefined
   sortBy: string
   sortOrder: 'asc' | 'desc'
   bgImage: boolean
@@ -124,6 +125,12 @@ const mainReducer = (state: MainStateType, action: any) => {
         ...state,
         sortBy: action.payload,
       }
+    case 'setDevice':
+      saveState({ device: action.payload })
+      return {
+        ...state,
+        device: action.payload,
+      }
     case 'setSortOrder':
       saveState({ sortOrder: action.payload })
       return {
@@ -167,6 +174,7 @@ const initState: MainStateType = {
   stations: [],
   station: null,
   volume: localState && localState.volume ? localState.volume : 0.5,
+  device: localState && localState.device ? localState.device : undefined,
   playing: false,
   sortBy: localState && typeof localState.sortBy !== 'undefined' ? localState.sortBy : 'listeners',
   sortOrder:
