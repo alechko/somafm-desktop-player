@@ -54,8 +54,38 @@ export const Controls = (props: BoxProps) => {
         })
         .catch(e => console.error(e))
     }
+    if (navigator.mediaSession) {
+      navigator.mediaSession.setActionHandler('play', () => {
+        dispatch({
+          type: station ? 'play' : 'resume',
+          payload: station ? { data: station } : {},
+        })
+      })
+      navigator.mediaSession.setActionHandler('pause', () => {
+        dispatch({
+          type: 'pause',
+        })
+      })
+    }
   }, [])
 
+  const playNext = () => {
+    const index = stations.findIndex(v => v.id === station!.id)
+    index &&
+      dispatch({
+        type: 'play',
+        payload: { data: stations[index + 1] },
+      })
+  }
+
+  const playPrev = () => {
+    const index = stations.findIndex(v => v.id === station!.id)
+    index &&
+      dispatch({
+        type: 'play',
+        payload: { data: stations[index - 1] },
+      })
+  }
   return (
     <Box {...props}>
       <Player />
@@ -96,13 +126,7 @@ export const Controls = (props: BoxProps) => {
             aria-label="Prev"
             icon={<Icon as={Prev} />}
             disabled={!playing}
-            onClick={() => {
-              const index = stations.findIndex(v => v.id === station!.id)
-              dispatch({
-                type: 'play',
-                payload: { data: stations[index - 1] },
-              })
-            }}
+            onClick={playPrev}
           />
           {playing ? (
             <IconButton
@@ -133,13 +157,7 @@ export const Controls = (props: BoxProps) => {
             aria-label="Next"
             icon={<Icon as={Next} />}
             disabled={!playing}
-            onClick={() => {
-              const index = stations.findIndex(v => v.id === station!.id)
-              dispatch({
-                type: 'play',
-                payload: { data: stations[index + 1] },
-              })
-            }}
+            onClick={playNext}
           />
           <Slider
             aria-label="Volume"
