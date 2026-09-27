@@ -51,15 +51,19 @@ export const Side = (props: BoxProps) => {
         <ListItem
           key={item.title}
           animation={{
-            // whileTap: 'tapped',
-            whileHover: 'hover',
+            // Reorder animations could leave rows stacked on top of each other
+            // after favoriting; rows now just jump to their new place
+            layout: false,
           }}
         >
           <Box
             key={item.id}
             bg={station && item.id === station.id ? 'whiteAlpha.300' : 'whiteAlpha.50'}
+            // CSS hover, so rows that move out from under the cursor don't stay enlarged
+            transition="transform 0.25s"
             _hover={{
               bgGradient: 'linear(to-t, #081d8622, #00d4ff22)',
+              transform: 'scale(1.05)',
             }}
             w="full"
             p={2}
