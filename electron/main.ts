@@ -110,6 +110,10 @@ async function registerListeners() {
 
 app
   .on('ready', () => {
+    // In dev the app runs inside the stock Electron.app, so its Dock icon is Electron's
+    if (process.platform === 'darwin' && !app.isPackaged) {
+      app.dock?.setIcon(iconPath)
+    }
     createWindow()
     createTray()
     createMenu()
