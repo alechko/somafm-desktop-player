@@ -5,7 +5,7 @@
     "name": "alechko",
     "email": "mail@alechko.net"
   },
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "SomaFM desktop player",
   "repository": "alechko/somafm-desktop-player",
   "scripts": {
