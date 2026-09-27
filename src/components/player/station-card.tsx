@@ -58,7 +58,7 @@ export const StationCard = (props: BoxProps) => {
   return (
     <Box bg="blackAlpha.500" w="full" h="full" rounded="md" overflow="auto" {...props}>
       <Flex h="full" w=" full" p={8} justifyContent="start" alignItems="start">
-        <VStack w="full" bg="blackAlpha.700" rounded="md" p={8} minH="full">
+        <VStack w="full" rounded="md" p={8} minH="full">
           <Flex justifyContent="center" alignItems="center" w="full">
             <Box flexGrow={1}>
               <Heading

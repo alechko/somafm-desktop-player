@@ -5,13 +5,13 @@
 
 ## About
 
-SomaFM desktop player for Mac, Linux and Windows is a small project to practice Electron with React.
+SomaFM desktop player for Mac, Linux and Windows is a small project built with Tauri and React.
 
 [![Download for Mac, Linux and Windows](https://img.shields.io/badge/-Download_Latest-success?style=for-the-badge)](https://github.com/alechko/somafm-desktop-player/releases/latest)
 
 [![SomaFM Desktop Player](https://raw.githubusercontent.com/alechko/somafm-desktop-player/main/assets/screenshot.png ':size=800 SomaFM Desktop Player')](https://github.com/alechko/somafm-desktop-player/releases/latest)
 
-Built based on [Electron + TypeScript + React](https://github.com/diego3g/electron-typescript-react) template with Chakra UI.
+Built with [Tauri](https://tauri.app), React and Chakra UI. Audio is decoded natively, so the player can use its own output device.
 
 ## License
 

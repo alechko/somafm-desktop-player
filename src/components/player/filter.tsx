@@ -24,7 +24,6 @@ export const Filter = (props: BoxProps) => {
       <Flex>
         <Box>
           <Select
-            placeholder="Sort by"
             flexGrow={1}
             value={sortBy}
             onChange={v =>
@@ -34,6 +33,9 @@ export const Filter = (props: BoxProps) => {
               })
             }
           >
+            <option value="" disabled>
+              Sort by
+            </option>
             <option value="title">Title</option>
             <option value="listeners">Listeners</option>
           </Select>

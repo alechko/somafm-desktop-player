@@ -12,7 +12,7 @@ export const getAllStations = async () => {
 }
 
 export const getStationUrl = (id: string) => {
-  const url = `${iceUrl}/${id}`
+  const url = `${iceUrl}/${id}-128-mp3`
   return url
 }
 

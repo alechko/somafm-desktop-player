@@ -5,15 +5,15 @@
     "name": "alechko",
     "email": "mail@alechko.net"
   },
-  "version": "0.0.23",
-  "description": "SomaFM desktop player for MacOS",
+  "version": "0.0.24",
+  "description": "SomaFM desktop player",
   "repository": "alechko/somafm-desktop-player",
-  "main": "./.webpack/main",
   "scripts": {
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "release": "electron-forge publish",
+    "start": "tauri dev",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "build:mac": "CI=true tauri build --target universal-apple-darwin",
+    "tauri": "tauri",
     "lint": "eslint . --ext js,ts",
     "test": "jest",
     "docs": "docsify serve docs"
@@ -24,44 +24,28 @@
     "@chakra-ui/react": "^1.7.4",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
+    "@tauri-apps/api": "^2.12.0",
+    "@tauri-apps/plugin-log": "^2.10.0",
     "axios": "^0.25.0",
-    "electron-default-menu": "^1.0.2",
     "framer-motion": "^6.2.1",
-    "loadash": "^1.0.0",
+    "lodash": "^4.17.21",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "react-hot-loader": "4.13.0",
-    "react-player": "^2.9.0",
     "styled-components": "5.3.3"
   },
   "devDependencies": {
-    "@babel/core": "7.16.7",
-    "@babel/plugin-transform-runtime": "7.16.7",
-    "@babel/preset-env": "7.16.7",
-    "@babel/preset-react": "7.16.7",
-    "@babel/preset-typescript": "7.16.7",
-    "@electron-forge/cli": "^6.0.0-beta.63",
-    "@electron-forge/maker-deb": "6.0.0-beta.63",
-    "@electron-forge/maker-dmg": "^6.0.0-beta.63",
-    "@electron-forge/maker-rpm": "6.0.0-beta.63",
-    "@electron-forge/maker-squirrel": "6.0.0-beta.63",
-    "@electron-forge/maker-zip": "6.0.0-beta.63",
-    "@electron-forge/plugin-webpack": "6.0.0-beta.63",
-    "@electron-forge/publisher-github": "^6.0.0-beta.63",
-    "@marshallofsound/webpack-asset-relocator-loader": "0.5.0",
+    "@tauri-apps/cli": "^2.12.0",
     "@testing-library/jest-dom": "5.16.1",
     "@testing-library/react": "12.1.2",
-    "@types/electron-devtools-installer": "2.2.1",
     "@types/jest": "27.4.0",
+    "@types/lodash": "4.14.182",
     "@types/react": "17.0.38",
     "@types/react-dom": "17.0.11",
     "@types/styled-components": "5.1.19",
+    "@types/testing-library__jest-dom": "^5.14.9",
     "@typescript-eslint/eslint-plugin": "5.9.0",
     "@typescript-eslint/parser": "5.9.0",
-    "babel-loader": "8.2.3",
-    "cross-env": "7.0.3",
-    "css-loader": "^6.5.1",
-    "electron": "16.0.6",
+    "@vitejs/plugin-react": "^6.1.1",
     "eslint": "8.6.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-config-standard": "16.0.3",
@@ -71,103 +55,19 @@
     "eslint-plugin-promise": "6.0.0",
     "eslint-plugin-react": "7.28.0",
     "eslint-plugin-standard": "5.0.0",
-    "file-loader": "^6.2.0",
     "jest": "27.4.7",
-    "npm-run-all": "4.1.5",
     "prettier": "2.5.1",
-    "sass": "^1.47.0",
-    "sass-loader": "^12.4.0",
-    "style-loader": "^3.3.1",
     "ts-jest": "27.1.2",
     "typescript": "4.5.4",
-    "wait-on": "6.0.0"
+    "vite": "^8.3.1"
   },
-  "config": {
-    "forge": {
-      "packagerConfig": {
-        "name": "SomaFM Desktop Player",
-        "executableName": "somafm-desktop-player",
-        "icon": "assets/icon",
-        "extraResource": [
-          "assets"
-        ]
-      },
-      "plugins": [
-        [
-          "@electron-forge/plugin-webpack",
-          {
-            "devContentSecurityPolicy": "default-src * self blob: data: gap:; style-src * self 'unsafe-inline' blob: data: gap:; script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:; object-src * 'self' blob: data: gap:; img-src * self 'unsafe-inline' blob: data: gap:; connect-src self * 'unsafe-inline' blob: data: gap:; frame-src * self blob: data: gap:;",
-            "mainConfig": "./webpack/main.webpack.js",
-            "renderer": {
-              "config": "./webpack/renderer.webpack.js",
-              "entryPoints": [
-                {
-                  "html": "./public/index.html",
-                  "js": "./src/index.tsx",
-                  "name": "main_window",
-                  "preload": {
-                    "js": "./electron/bridge.ts"
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      ],
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "SomaFMDesktopPlayer"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-dmg",
-          "config": {
-            "additionalDMGOptions": {
-              "window": {
-                "size": {
-                  "position": {
-                    "x": 100,
-                    "y": 200
-                  },
-                  "width": 658,
-                  "height": 580
-                }
-              }
-            }
-          },
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        }
-      ],
-      "publishers": [
-        {
-          "name": "@electron-forge/publisher-github",
-          "config": {
-            "repository": {
-              "owner": "alechko",
-              "name": "somafm-desktop-player"
-            },
-            "draft": false
-          }
-        }
-      ]
+  "packageManager": "pnpm@10.33.4",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ],
+    "overrides": {
+      "@types/lodash": "4.14.182"
     }
   }
 }

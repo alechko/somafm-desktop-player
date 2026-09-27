@@ -28,7 +28,7 @@ export const SongCard = ({ song, index, last, ...rest }: SongCardProps) => {
     >
       <Flex p={4}>
         <Center>
-          <HStack space={4}>
+          <HStack spacing={4}>
             <RotatingItem enabled={index === 0 && playing}>
               <Disc height={8} width={8} color="whiteAlpha.400" />
             </RotatingItem>

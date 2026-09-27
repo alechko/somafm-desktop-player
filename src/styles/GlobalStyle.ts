@@ -5,6 +5,8 @@ export const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.5) transparent;
   }
 
   html {
@@ -12,27 +14,6 @@ export const GlobalStyle = createGlobalStyle`
   }
   html, body, #root {
     height: 100%
-  }
-
-  .drag {
-    -webkit-app-region: drag;
-  }
-
-  .no-drag {
-    -webkit-app-region: no-drag;
-  }
-
-  .grab {
-    cursor: move;
-    cursor: -webkit-grab;
-    cursor: -moz-grab;
-    cursor: grab;
-  }
-
-  .grab:active {
-      cursor: grabbing;
-      cursor: -moz-grabbing;
-      cursor: -webkit-grabbing;
   }
 
   .no-select {

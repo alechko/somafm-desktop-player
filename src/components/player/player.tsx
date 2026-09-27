@@ -1,47 +1,28 @@
-import { useEffect, useRef } from 'react'
-import ReactPlayer from 'react-player'
+import { useEffect } from 'react'
+import { playStream, setPlayerDevice, setPlayerVolume, stopStream } from '../../lib/audio'
 import { useMainContext } from '../../lib/context'
 import { getStationUrl } from '../../lib/somafm'
 
+// Drives the native player; renders nothing
 export const Player = () => {
   const {
     state: { playing, volume, station, device },
   } = useMainContext()
 
-  const player = useRef<ReactPlayer>(null)
-
+  // Device and volume effects run first so a restored station starts on the right output
   useEffect(() => {
-    if (device) {
-      changeDevice()
-    }
+    setPlayerDevice(device).catch(e => console.error(e))
   }, [device])
 
-  const changeDevice = () => {
-    if (device && player.current) {
-      const audioEl = player.current.getInternalPlayer()
-      audioEl.setSinkId(device)
-    }
-  }
+  useEffect(() => {
+    setPlayerVolume(volume).catch(e => console.error(e))
+  }, [volume])
 
-  if (!playing || !station) {
-    return <></>
-  }
-  const stationUrl = getStationUrl(station.id)
-  return (
-    <ReactPlayer
-      ref={player}
-      height={0}
-      width={0}
-      // url="https://ice2.somafm.com/dronezone-256-mp3"
-      url={stationUrl}
-      volume={volume}
-      playing={playing}
-      onReady={changeDevice}
-      config={{
-        file: {
-          forceAudio: true,
-        },
-      }}
-    />
-  )
+  const stationId = station ? station.id : null
+  useEffect(() => {
+    const action = playing && stationId ? playStream(getStationUrl(stationId)) : stopStream()
+    action.catch(e => console.error(e))
+  }, [playing, stationId])
+
+  return null
 }

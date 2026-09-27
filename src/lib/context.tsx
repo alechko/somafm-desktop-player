@@ -52,27 +52,23 @@ const mainReducer = (state: MainStateType, action: any) => {
   switch (action.type) {
     case 'play':
       saveState({ station: action.payload.data.id })
-      window.Main.sendMessage('playing', true)
       return {
         ...state,
         station: action.payload.data,
         playing: true,
       }
     case 'stop':
-      window.Main.sendMessage('playing', false)
       return {
         ...state,
         playing: false,
         station: null,
       }
     case 'pause':
-      window.Main.sendMessage('playing', false)
       return {
         ...state,
         playing: false,
       }
     case 'resume':
-      window.Main.sendMessage('playing', true)
       return {
         ...state,
         playing: true,
@@ -87,7 +83,6 @@ const mainReducer = (state: MainStateType, action: any) => {
           : null
       // eslint-disable-next-line no-case-declarations
       const playing = !!station
-      playing && window.Main.sendMessage('playing', true)
       // eslint-disable-next-line no-case-declarations
       const stations = action.payload.data.map((s: StationType) => {
         const fav =
@@ -119,17 +114,18 @@ const mainReducer = (state: MainStateType, action: any) => {
         ...state,
         volume: action.payload,
       }
+    case 'setDevice':
+      // Saved as null: saveState's merge would skip undefined and keep the old device
+      saveState({ device: action.payload ?? null })
+      return {
+        ...state,
+        device: action.payload,
+      }
     case 'setSortBy':
       saveState({ sortBy: action.payload })
       return {
         ...state,
         sortBy: action.payload,
-      }
-    case 'setDevice':
-      saveState({ device: action.payload })
-      return {
-        ...state,
-        device: action.payload,
       }
     case 'setSortOrder':
       saveState({ sortOrder: action.payload })
@@ -176,7 +172,7 @@ const initState: MainStateType = {
   volume: localState && localState.volume ? localState.volume : 0.5,
   device: localState && localState.device ? localState.device : undefined,
   playing: false,
-  sortBy: localState && typeof localState.sortBy !== 'undefined' ? localState.sortBy : 'listeners',
+  sortBy: (localState && localState.sortBy) || 'listeners',
   sortOrder:
     localState && typeof localState.sortOrder !== 'undefined' ? localState.sortOrder : 'desc',
   bgImage: localState && typeof localState.bgImage !== 'undefined' ? localState.bgImage : true,
