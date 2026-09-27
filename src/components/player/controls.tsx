@@ -15,7 +15,7 @@ import {
   SliderTrack,
   Spacer,
 } from '@chakra-ui/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useMainContext } from '../../lib/context'
 import { Check, DropInvert, Headphones, Img, Next, Pause, Play, Prev } from '../common/icons'
 import { Player } from './player'
@@ -47,12 +47,15 @@ export const Controls = (props: BoxProps) => {
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
   useEffect(() => {
     if (navigator.mediaDevices && typeof navigator.mediaDevices.enumerateDevices === 'function') {
-      navigator.mediaDevices
-        .enumerateDevices()
-        .then(mediaDevices => {
-          setDevices(mediaDevices.filter(({ kind }) => kind === 'audiooutput'))
-        })
-        .catch(e => console.error(e))
+      const loadDevices = () =>
+        navigator.mediaDevices
+          .enumerateDevices()
+          .then(mediaDevices => {
+            setDevices(mediaDevices.filter(({ kind }) => kind === 'audiooutput'))
+          })
+          .catch(e => console.error(e))
+      loadDevices()
+      navigator.mediaDevices.addEventListener('devicechange', loadDevices)
     }
     if (navigator.mediaSession) {
       navigator.mediaSession.setActionHandler('play', () => {
@@ -69,23 +72,52 @@ export const Controls = (props: BoxProps) => {
     }
   }, [])
 
-  const playNext = () => {
-    const index = stations.findIndex(v => v.id === station!.id)
-    index &&
-      dispatch({
-        type: 'play',
-        payload: { data: stations[index + 1] },
-      })
+  // Step through the list in its current order, wrapping around at either end
+  const playOffset = (offset: number) => {
+    if (!stations.length) return
+    const index = station ? stations.findIndex(v => v.id === station.id) : -1
+    const next =
+      index === -1
+        ? stations[offset > 0 ? 0 : stations.length - 1]
+        : stations[(index + offset + stations.length) % stations.length]
+    dispatch({
+      type: 'play',
+      payload: { data: next },
+    })
   }
+  const playNext = () => playOffset(1)
+  const playPrev = () => playOffset(-1)
 
-  const playPrev = () => {
-    const index = stations.findIndex(v => v.id === station!.id)
-    index &&
-      dispatch({
-        type: 'play',
-        payload: { data: stations[index - 1] },
+  // Keep the app menu (Controls / Favorites) in sync with the player
+  useEffect(() => {
+    window.Main &&
+      window.Main.sendMessage('menuState', {
+        station: station ? station.id : null,
+        favorites: stations.filter(s => s.fav).map(({ id, title }) => ({ id, title })),
+        devices: devices.map(({ deviceId, label }) => ({ deviceId, label })),
+        device,
       })
+  }, [station, stations, devices, device])
+
+  // The listener is registered once, so it reads the latest handlers through a ref
+  const onMenuAction = useRef<(action: any) => void>()
+  onMenuAction.current = action => {
+    switch (action.type) {
+      case 'next':
+        return playNext()
+      case 'prev':
+        return playPrev()
+      case 'playStation': {
+        const next = stations.find(s => s.id === action.id)
+        return next && dispatch({ type: 'play', payload: { data: next } })
+      }
+      case 'setDevice':
+        return dispatch({ type: 'setDevice', payload: action.deviceId })
+    }
   }
+  useEffect(() => {
+    window.Main && window.Main.on('menuAction', (action: any) => onMenuAction.current?.(action))
+  }, [])
   return (
     <Box {...props}>
       <Player />

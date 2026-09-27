@@ -17,6 +17,14 @@ let tray: Tray | null
 let contextMenu: Menu | null
 let playing: boolean | null
 
+type MenuState = {
+  station: string | null
+  favorites: { id: string; title: string }[]
+  devices: { deviceId: string; label: string }[]
+  device: string | undefined
+}
+let menuState: MenuState = { station: null, favorites: [], devices: [], device: undefined }
+
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string
 
@@ -65,12 +73,62 @@ const PlayMenuItemTemplate = (): MenuItemConstructorOptions => {
   }
 }
 
+const sendMenuAction = (action: Record<string, unknown>) => {
+  mainWindow && mainWindow.webContents.send('menuAction', action)
+}
+
+const stationNavItems = (): MenuItemConstructorOptions[] => {
+  const hasStation = menuState.station !== null
+  return [
+    {
+      label: 'Next Station',
+      enabled: hasStation,
+      click: () => sendMenuAction({ type: 'next' }),
+    },
+    {
+      label: 'Previous Station',
+      enabled: hasStation,
+      click: () => sendMenuAction({ type: 'prev' }),
+    },
+  ]
+}
+
+const audioOutputMenu = (): MenuItemConstructorOptions => {
+  const selectedDevice = menuState.device || 'default'
+  return {
+    label: 'Audio Output',
+    enabled: menuState.devices.length > 0,
+    submenu: menuState.devices.map(({ deviceId, label }) => ({
+      label: label || 'Unknown device',
+      type: 'checkbox',
+      checked: deviceId === selectedDevice,
+      click: () => sendMenuAction({ type: 'setDevice', deviceId }),
+    })),
+  }
+}
+
+const favoritesMenu = (): MenuItemConstructorOptions => ({
+  label: 'Favorites',
+  submenu: menuState.favorites.length
+    ? menuState.favorites.map(({ id, title }) => ({
+        label: title,
+        type: 'checkbox',
+        checked: id === menuState.station,
+        click: () => sendMenuAction({ type: 'playStation', id }),
+      }))
+    : [{ label: 'No favorites yet', enabled: false }],
+})
+
 function createTray() {
   const PlayMenuItem = PlayMenuItemTemplate()
   const trayTemplate: MenuItemConstructorOptions[] = [
     { role: 'about' },
     { type: 'separator' },
     { ...PlayMenuItem },
+    ...stationNavItems(),
+    { type: 'separator' },
+    favoritesMenu(),
+    audioOutputMenu(),
     { type: 'separator' },
     { role: 'quit' },
   ]
@@ -105,6 +163,10 @@ async function registerListeners() {
 
     createTray()
     createMenu()
+  })
+  ipcMain.on('menuState', (_, state: MenuState) => {
+    menuState = state
+    createTray()
   })
 }
 
