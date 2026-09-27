@@ -176,7 +176,7 @@ const initState: MainStateType = {
   volume: localState && localState.volume ? localState.volume : 0.5,
   device: localState && localState.device ? localState.device : undefined,
   playing: false,
-  sortBy: localState && typeof localState.sortBy !== 'undefined' ? localState.sortBy : 'listeners',
+  sortBy: (localState && localState.sortBy) || 'listeners',
   sortOrder:
     localState && typeof localState.sortOrder !== 'undefined' ? localState.sortOrder : 'desc',
   bgImage: localState && typeof localState.bgImage !== 'undefined' ? localState.bgImage : true,
