@@ -43,7 +43,7 @@ export const Side = (props: BoxProps) => {
       p={4}
       bg="blackAlpha.500"
       _hover={{
-        bg: 'blackAlpha.900',
+        bg: 'blackAlpha.700',
       }}
       className="no-drag"
     >
