@@ -11,10 +11,10 @@ Built based on [Electron + TypeScript + React](https://github.com/diego3g/electr
 
 ## Local Installation
 
-Use a package manager of your choice (npm, yarn, etc.) in order to install all dependencies
+This project uses [pnpm](https://pnpm.io). Install all dependencies with
 
 ```bash
-yarn
+pnpm install
 ```
 
 ## Usage
@@ -22,7 +22,7 @@ yarn
 Just run `start` script.
 
 ```bash
-yarn start
+pnpm start
 ```
 
 ## Packaging
@@ -30,7 +30,13 @@ yarn start
 To generate the project package based on the OS you're running on, just run:
 
 ```bash
-yarn package
+pnpm run package
+```
+
+To build a universal macOS app (native on both Apple Silicon and Intel) with DMG and zip:
+
+```bash
+pnpm run make:mac
 ```
 
 ## License

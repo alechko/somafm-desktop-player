@@ -12,7 +12,7 @@ export const Home = () => {
     <Box
       h="full"
       w="full"
-      backgroundImage={playing && station && bgImage ? station.xlimage : ''}
+      backgroundImage={playing && station && bgImage ? station.xlimage : undefined}
       backgroundRepeat="no-repeat"
       backgroundSize="cover"
       bgPos="center"
