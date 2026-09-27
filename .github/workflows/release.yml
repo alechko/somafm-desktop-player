@@ -4,9 +4,25 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: write
+
 jobs:
-  publish_on_linux:
-    runs-on: ubuntu-latest
+  release:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            args: --target universal-apple-darwin
+            rust-targets: aarch64-apple-darwin,x86_64-apple-darwin
+          - platform: ubuntu-24.04
+            args: ""
+            rust-targets: ""
+          - platform: windows-latest
+            args: ""
+            rust-targets: ""
+    runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -14,47 +30,28 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - name: install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: test
-        run: pnpm test
-      - name: release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pnpm run release
-
-  publish_on_mac:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          node-version: 22
-          cache: pnpm
-      - name: install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: test
-        run: pnpm test
-      - name: release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pnpm run release:mac
-
-  publish_on_win:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+          targets: ${{ matrix.rust-targets }}
+      - uses: swatinem/rust-cache@v2
         with:
-          node-version: 22
-          cache: pnpm
+          workspaces: "./src-tauri -> target"
+      - name: install Linux dependencies
+        if: runner.os == 'Linux'
+        # WebKitGTK and tray icons for Tauri, ALSA for audio output, D-Bus for media controls
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev libasound2-dev libdbus-1-dev
       - name: install dependencies
         run: pnpm install --frozen-lockfile
       - name: test
         run: pnpm test
-      - name: release
+      - name: build and release
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pnpm run release
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: SomaFM Desktop Player ${{ github.ref_name }}
+          releaseDraft: false
+          args: ${{ matrix.args }}

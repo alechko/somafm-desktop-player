@@ -8,7 +8,7 @@ on:
       - main
 
 jobs:
-  test:
+  ui:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,5 +19,36 @@ jobs:
           cache: pnpm
       - name: install dependencies
         run: pnpm install --frozen-lockfile
+      - name: lint
+        run: pnpm lint
+      - name: typecheck
+        run: pnpm exec tsc --noEmit -p .
       - name: test
         run: pnpm test
+
+  native:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+      - name: install Linux dependencies
+        # WebKitGTK and tray icons for Tauri, ALSA for audio output, D-Bus for media controls
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev libasound2-dev libdbus-1-dev
+      - name: install dependencies
+        run: pnpm install --frozen-lockfile
+      # The Rust build embeds the built UI, so it has to exist first
+      - name: build UI
+        run: pnpm exec vite build
+      - name: test
+        working-directory: src-tauri
+        run: cargo test
