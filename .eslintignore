@@ -1,6 +1,5 @@
 */.js
 node_modules
 dist
-webpack/*.js
-.webpack
-out
+src-tauri/target
+src-tauri/gen

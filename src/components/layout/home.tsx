@@ -16,7 +16,7 @@ export const Home = () => {
       backgroundRepeat="no-repeat"
       backgroundSize="cover"
       bgPos="center"
-      className="drag"
+      data-tauri-drag-region
     >
       <Box
         h="full"
@@ -24,13 +24,14 @@ export const Home = () => {
         p={4}
         className={playing && station && bgParty ? 'player-overlay' : ''}
         pt={8}
+        data-tauri-drag-region
       >
         <HStack h="full" spacing={4}>
           <Side />
           <Center flexGrow={1} h="full">
             <VStack h="full" w="full" spacing={4}>
-              <StationCard flexGrow={1} className="no-drag" />
-              <Controls w="full" className="no-drag" />
+              <StationCard flexGrow={1} />
+              <Controls w="full" />
             </VStack>
           </Center>
         </HStack>

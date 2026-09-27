@@ -14,9 +14,14 @@ import {
   SliderThumb,
   SliderTrack,
   Spacer,
+  useInterval,
 } from '@chakra-ui/react'
-import { useEffect, useRef, useState } from 'react'
+import { isEqual } from 'lodash'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { listOutputDevices, OutputDevice } from '../../lib/audio'
 import { useMainContext } from '../../lib/context'
+import { MediaAction, onMediaAction, updateNowPlaying } from '../../lib/media'
+import { useTrayMenu } from '../../lib/tray'
 import { Check, DropInvert, Headphones, Img, Next, Pause, Play, Prev } from '../common/icons'
 import { Player } from './player'
 
@@ -26,51 +31,26 @@ export const Controls = (props: BoxProps) => {
     dispatch,
   } = useMainContext()
 
-  useEffect(
-    () =>
-      window.Main &&
-      window.Main.on('playToggle', (playing: boolean | undefined) => {
-        if (playing) {
-          dispatch({
-            type: 'pause',
-          })
-        } else {
-          dispatch({
-            type: station ? 'play' : 'resume',
-            payload: station ? { data: station } : {},
-          })
-        }
-      }),
-    []
-  )
+  const togglePlay = () => {
+    if (playing) {
+      dispatch({ type: 'pause' })
+    } else if (station) {
+      dispatch({ type: 'play', payload: { data: station } })
+    }
+  }
 
-  const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
+  // Output devices come from the native side; refresh them to catch plugged-in headphones
+  const [devices, setDevices] = useState<OutputDevice[]>([])
+  const loadDevices = () =>
+    listOutputDevices()
+      .then(next => setDevices(prev => (isEqual(prev, next) ? prev : next)))
+      .catch(e => console.error(e))
+  // Undefined follows the system default output
+  const selectDevice = (id: string | undefined) => dispatch({ type: 'setDevice', payload: id })
   useEffect(() => {
-    if (navigator.mediaDevices && typeof navigator.mediaDevices.enumerateDevices === 'function') {
-      const loadDevices = () =>
-        navigator.mediaDevices
-          .enumerateDevices()
-          .then(mediaDevices => {
-            setDevices(mediaDevices.filter(({ kind }) => kind === 'audiooutput'))
-          })
-          .catch(e => console.error(e))
-      loadDevices()
-      navigator.mediaDevices.addEventListener('devicechange', loadDevices)
-    }
-    if (navigator.mediaSession) {
-      navigator.mediaSession.setActionHandler('play', () => {
-        dispatch({
-          type: station ? 'play' : 'resume',
-          payload: station ? { data: station } : {},
-        })
-      })
-      navigator.mediaSession.setActionHandler('pause', () => {
-        dispatch({
-          type: 'pause',
-        })
-      })
-    }
+    loadDevices()
   }, [])
+  useInterval(loadDevices, 5000)
 
   // Step through the list in its current order, wrapping around at either end
   const playOffset = (offset: number) => {
@@ -88,36 +68,41 @@ export const Controls = (props: BoxProps) => {
   const playNext = () => playOffset(1)
   const playPrev = () => playOffset(-1)
 
-  // Keep the app menu (Controls / Favorites) in sync with the player
-  useEffect(() => {
-    window.Main &&
-      window.Main.sendMessage('menuState', {
-        station: station ? station.id : null,
-        favorites: stations.filter(s => s.fav).map(({ id, title }) => ({ id, title })),
-        devices: devices.map(({ deviceId, label }) => ({ deviceId, label })),
-        device,
-      })
-  }, [station, stations, devices, device])
-
-  // The listener is registered once, so it reads the latest handlers through a ref
-  const onMenuAction = useRef<(action: any) => void>()
-  onMenuAction.current = action => {
-    switch (action.type) {
-      case 'next':
-        return playNext()
-      case 'prev':
-        return playPrev()
-      case 'playStation': {
-        const next = stations.find(s => s.id === action.id)
-        return next && dispatch({ type: 'play', payload: { data: next } })
-      }
-      case 'setDevice':
-        return dispatch({ type: 'setDevice', payload: action.deviceId })
-    }
+  // Media keys reach the latest handlers through a ref; the listener is registered once
+  const onMedia = useRef<(action: MediaAction) => void>(() => {})
+  onMedia.current = action => {
+    if (action === 'next') return playNext()
+    if (action === 'prev') return playPrev()
+    if (action === 'toggle' || (action === 'play') !== playing) togglePlay()
   }
   useEffect(() => {
-    window.Main && window.Main.on('menuAction', (action: any) => onMenuAction.current?.(action))
+    const unlisten = onMediaAction(action => onMedia.current(action))
+    return () => {
+      unlisten.then(stop => stop())
+    }
   }, [])
+
+  useEffect(() => {
+    updateNowPlaying(playing, station?.title, station ? 'SomaFM' : undefined).catch(e =>
+      console.error(e)
+    )
+  }, [playing, station])
+
+  const favorites = useMemo(() => stations.filter(s => s.fav), [stations])
+  useTrayMenu(
+    { playing, station, favorites, devices, device },
+    {
+      toggle: togglePlay,
+      next: playNext,
+      prev: playPrev,
+      playStation: id => {
+        const next = stations.find(s => s.id === id)
+        next && dispatch({ type: 'play', payload: { data: next } })
+      },
+      setDevice: selectDevice,
+    }
+  )
+
   return (
     <Box {...props}>
       <Player />
@@ -215,19 +200,14 @@ export const Controls = (props: BoxProps) => {
           <Menu>
             <MenuButton as={IconButton} icon={<Icon as={Headphones} />} />
             <MenuList>
-              {devices.map(({ deviceId, label }: MediaDeviceInfo) => (
+              {[{ id: undefined, name: 'System Default' }, ...devices].map(({ id, name }) => (
                 <MenuItem
-                  key={deviceId}
-                  icon={device && device === deviceId ? <Icon as={Check} /> : <></>}
+                  key={id ?? 'default'}
+                  icon={id === device ? <Icon as={Check} /> : <></>}
                   iconSpacing={4}
-                  onClick={() =>
-                    dispatch({
-                      type: 'setDevice',
-                      payload: deviceId,
-                    })
-                  }
+                  onClick={() => selectDevice(id)}
                 >
-                  {label}
+                  {name}
                 </MenuItem>
               ))}
             </MenuList>

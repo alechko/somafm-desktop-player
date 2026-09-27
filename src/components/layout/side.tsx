@@ -45,7 +45,6 @@ export const Side = (props: BoxProps) => {
       _hover={{
         bg: 'blackAlpha.700',
       }}
-      className="no-drag"
     >
       <Filter mb={2} />
       {stations.map((item, index) => (
