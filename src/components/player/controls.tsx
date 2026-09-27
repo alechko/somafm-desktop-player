@@ -31,11 +31,17 @@ export const Controls = (props: BoxProps) => {
     dispatch,
   } = useMainContext()
 
+  // Pausing keeps the station, so play resumes it; a random one only when nothing has played yet
   const togglePlay = () => {
     if (playing) {
       dispatch({ type: 'pause' })
     } else if (station) {
       dispatch({ type: 'play', payload: { data: station } })
+    } else if (stations.length) {
+      dispatch({
+        type: 'play',
+        payload: { data: stations[Math.floor(Math.random() * stations.length)] },
+      })
     }
   }
 
@@ -150,24 +156,15 @@ export const Controls = (props: BoxProps) => {
               aria-label="Pause"
               icon={<Icon as={Pause} />}
               size="lg"
-              onClick={() =>
-                dispatch({
-                  type: 'stop',
-                })
-              }
+              onClick={togglePlay}
             />
           ) : (
             <IconButton
               aria-label="Play"
               icon={<Icon as={Play} />}
               size="lg"
-              disabled={!stations}
-              onClick={() =>
-                dispatch({
-                  type: 'play',
-                  payload: { data: stations[Math.floor(Math.random() * stations.length)] },
-                })
-              }
+              disabled={!station && !stations.length}
+              onClick={togglePlay}
             />
           )}
           <IconButton

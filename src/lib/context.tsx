@@ -57,12 +57,6 @@ const mainReducer = (state: MainStateType, action: any) => {
         station: action.payload.data,
         playing: true,
       }
-    case 'stop':
-      return {
-        ...state,
-        playing: false,
-        station: null,
-      }
     case 'pause':
       return {
         ...state,
