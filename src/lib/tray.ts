@@ -1,11 +1,11 @@
-import { Menu } from '@tauri-apps/api/menu'
-import { TrayIcon } from '@tauri-apps/api/tray'
+import { listen } from '@tauri-apps/api/event'
 import { useEffect, useRef } from 'react'
 import { OutputDevice } from './audio'
 import { StationType } from './context'
-import { inTauri } from './tauri'
+import { call, inTauri } from './tauri'
 
-const APP_NAME = 'SomaFM Desktop Player'
+// The tray menu is built natively (src-tauri/src/tray.rs); this keeps it in sync
+// with the player and handles its clicks
 
 type TrayState = {
   playing: boolean
@@ -23,62 +23,50 @@ type TrayActions = {
   setDevice: (id: string | undefined) => void
 }
 
-// The tray icon itself is declared in tauri.conf.json; this keeps its menu in sync
+type TrayAction =
+  | { type: 'toggle' | 'next' | 'prev' }
+  | { type: 'playStation'; id: string }
+  | { type: 'setDevice'; id: string | null }
+
 export const useTrayMenu = (
   { playing, station, favorites, devices, device }: TrayState,
   actions: TrayActions
 ) => {
-  // Menu callbacks read the latest handlers, not the ones from when the menu was built
+  // The listener is registered once, so it reads the latest handlers through a ref
   const actionsRef = useRef(actions)
   actionsRef.current = actions
-  const currentMenu = useRef<Menu | null>(null)
 
   useEffect(() => {
     if (!inTauri) return
-    let cancelled = false
-    const run = (fn: (a: TrayActions) => void) => () => fn(actionsRef.current)
-
-    const update = async () => {
-      const menu = await Menu.new({
-        items: [
-          // Named explicitly: in dev the unbundled binary would show its package name
-          { text: `About ${APP_NAME}`, item: { About: { name: APP_NAME } } },
-          { item: 'Separator' },
-          { text: playing ? 'Pause' : 'Play', enabled: !!station, action: run(a => a.toggle()) },
-          { text: 'Next Station', enabled: !!station, action: run(a => a.next()) },
-          { text: 'Previous Station', enabled: !!station, action: run(a => a.prev()) },
-          { item: 'Separator' },
-          {
-            text: 'Favorites',
-            items: favorites.length
-              ? favorites.map(({ id, title }) => ({
-                  text: title,
-                  checked: !!station && station.id === id,
-                  action: run(a => a.playStation(id)),
-                }))
-              : [{ text: 'No favorites yet', enabled: false }],
-          },
-          {
-            text: 'Audio Output',
-            items: [{ id: undefined, name: 'System Default' }, ...devices].map(({ id, name }) => ({
-              text: name,
-              checked: id === device,
-              action: run(a => a.setDevice(id)),
-            })),
-          },
-          { item: 'Separator' },
-          { item: 'Quit' },
-        ],
-      })
-      if (cancelled) return menu.close()
-      const tray = await TrayIcon.getById('main')
-      await tray?.setMenu(menu)
-      await currentMenu.current?.close()
-      currentMenu.current = menu
-    }
-    update().catch(e => console.error(e))
+    const unlisten = listen<TrayAction>('tray-action', ({ payload }) => {
+      const a = actionsRef.current
+      switch (payload.type) {
+        case 'toggle':
+          return a.toggle()
+        case 'next':
+          return a.next()
+        case 'prev':
+          return a.prev()
+        case 'playStation':
+          return a.playStation(payload.id)
+        case 'setDevice':
+          return a.setDevice(payload.id ?? undefined)
+      }
+    })
     return () => {
-      cancelled = true
+      unlisten.then(stop => stop())
     }
+  }, [])
+
+  useEffect(() => {
+    call('tray_update', {
+      state: {
+        playing,
+        station: station ? station.id : null,
+        favorites: favorites.map(({ id, title }) => ({ id, title })),
+        devices: devices.map(({ id, name }) => ({ id, name })),
+        device: device ?? null,
+      },
+    }).catch(e => console.error(e))
   }, [playing, station, favorites, devices, device])
 }
