@@ -53,3 +53,26 @@ test('play picks a random station when nothing has played yet', () => {
   const [action] = dispatch.mock.calls.find(([a]) => a.type === 'play')!
   expect([groove, drone]).toContain(action.payload.data)
 })
+
+test('space toggles playback', () => {
+  const { dispatch } = renderControls({ station: drone, playing: false })
+  fireEvent.keyDown(document.body, { code: 'Space', key: ' ' })
+  expect(dispatch).toHaveBeenCalledWith({ type: 'play', payload: { data: drone } })
+})
+
+test('space on a focused button toggles playback instead of pressing it', () => {
+  const { getByLabelText, dispatch } = renderControls({ station: drone, playing: true })
+  const next = getByLabelText('Next')
+  next.focus()
+  const event = fireEvent.keyDown(next, { code: 'Space', key: ' ' })
+  expect(event).toBe(false) // default prevented, so the button isn't pressed
+  expect(dispatch).toHaveBeenCalledWith({ type: 'pause' })
+})
+
+test('space in the sort dropdown is left alone', () => {
+  const { container, dispatch } = renderControls({ station: drone, playing: true })
+  const select = document.createElement('select')
+  container.appendChild(select)
+  fireEvent.keyDown(select, { code: 'Space', key: ' ' })
+  expect(dispatch).not.toHaveBeenCalled()
+})

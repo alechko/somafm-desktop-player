@@ -45,6 +45,24 @@ export const Controls = (props: BoxProps) => {
     }
   }
 
+  // Space toggles playback anywhere except where it types or picks an option,
+  // and it no longer presses whichever button was clicked last
+  const togglePlayRef = useRef(togglePlay)
+  togglePlayRef.current = togglePlay
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.code !== 'Space' || event.repeat || event.metaKey || event.ctrlKey || event.altKey)
+        return
+      const target = event.target as HTMLElement | null
+      if (target?.closest('input, textarea, select, [contenteditable="true"], [role="menuitem"]'))
+        return
+      event.preventDefault()
+      togglePlayRef.current()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [])
+
   // Output devices come from the native side; refresh them to catch plugged-in headphones
   const [devices, setDevices] = useState<OutputDevice[]>([])
   const loadDevices = () =>

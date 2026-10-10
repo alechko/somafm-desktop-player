@@ -1,5 +1,6 @@
 mod media;
 mod player;
+mod tray;
 
 use tauri::Manager;
 
@@ -7,6 +8,8 @@ use tauri::Manager;
 pub fn run() {
   tauri::Builder::default()
     .manage(player::AudioPlayer::new())
+    .manage(tray::Tray::default())
+    .on_menu_event(tray::on_menu_event)
     .invoke_handler(tauri::generate_handler![
       player::player_play,
       player::player_stop,
@@ -14,6 +17,7 @@ pub fn run() {
       player::player_set_device,
       player::list_output_devices,
       media::media_update,
+      tray::tray_update,
     ])
     .setup(|app| {
       if cfg!(debug_assertions) {
